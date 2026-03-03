@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/profile.css"/>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-text">Micro<span>Audit</span></div>
+    <div class="logo-sub">Committee Tracker</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">⚡</span> Dashboard</a>
+    <a href="action-form.html" class="nav-item"><span class="nav-icon">＋</span> New Action</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📋</span> My Actions <span class="badge">4</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span> Audit Logs</a>
+    <div class="nav-label">Reports</div>
+    <a href="#" class="nav-item"><span class="nav-icon">📊</span> Analytics</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📁</span> Reports</a>
+    <div class="nav-label">Account</div>
+    <a href="profile.html" class="nav-item active"><span class="nav-icon">👤</span> Profile</a>
+    <a href="../index.html" class="nav-item" onclick="sessionStorage.clear()"><span class="nav-icon">🚪</span> Logout</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-card">
+      <div class="avatar-sm">GC</div>
+      <div><div class="uname">Gaurav C.</div><div class="urole">Member</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">My Profile</div>
+    <div class="tb-right">
+      <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="left-col">
+      <div class="profile-hero">
+        <div class="big-avatar" title="Click to change">GC</div>
+        <div class="avatar-edit">Click to change photo</div>
+        <div class="profile-name" id="heroName">Gaurav Chopde</div>
+        <div class="profile-role">Committee Member</div>
+        <div class="profile-id">STAFF_2024_GC</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-cell"><div class="stat-n">12</div><div class="stat-l">Actions</div></div>
+        <div class="stat-cell"><div class="stat-n g">9</div><div class="stat-l">On Time</div></div>
+        <div class="stat-cell"><div class="stat-n r">3</div><div class="stat-l">Delayed</div></div>
+      </div>
+
+      <div class="score-card">
+        <div class="sc-title">Accountability Score</div>
+        <div class="score-circle-wrap">
+          <div class="score-circle"><span class="score-num">84</span></div>
+          <div class="score-detail">
+            <b>Good Standing</b><br/>
+            9 of 12 actions on time.<br/>
+            <span class="warn-text">3 delays recorded</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="heatmap-card">
+        <div class="hm-title">Activity — Last 12 Months</div>
+        <div class="hm-grid" id="heatmap"></div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="edit-panel">
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTab(this,'info')">Personal Info</div>
+          <div class="tab" onclick="switchTab(this,'actions')">My Actions</div>
+          <div class="tab" onclick="switchTab(this,'security')">Security</div>
+        </div>
+
+        <div class="tab-content active" id="tab-info">
+          <div class="ep-sub-header">
+            <h3>Personal Information</h3>
+            <p>Changes are timestamped and recorded in the audit trail.</p>
+          </div>
+          <div class="ep-body">
+            <div class="form-row">
+              <div class="form-group"><label>Full Name</label><input type="text" id="fullName" name="fullName" value="Gaurav Chopde"/></div>
+              <div class="form-group"><label>Staff ID</label><input type="text" value="STAFF_2024_GC" readonly/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email Address</label><input type="email" id="email" name="email" value="gaurav.chopde@college.edu"/></div>
+              <div class="form-group"><label>Phone</label><input type="tel" id="phone" name="phone" placeholder="+91 9XXXXXXXXX"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Department</label>
+                <select id="dept" name="department">
+                  <option selected>Computer Engineering</option>
+                  <option>Information Technology</option>
+                  <option>Electronics</option>
+                  <option>Mechanical</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Committee</label>
+                <select id="committee" name="committee">
+                  <option selected>Exam Committee</option>
+                  <option>Purchase Committee</option>
+                  <option>Cultural Committee</option>
+                  <option>NAAC Committee</option>
+                  <option>Hostel Committee</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Role</label><input type="text" value="Committee Member" readonly/></div>
+              <div class="form-group"><label>Joined</label><input type="text" value="June 2023" readonly/></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-actions">
+          <table>
+            <thead><tr><th>Action ID</th><th>Title</th><th>Committee</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              <tr><td class="ac">ACT-001</td><td>Equipment Purchase</td><td class="mt">Purchase</td><td><span class="status-badge s-review">Review</span></td><td class="mt">Feb 01</td></tr>
+              <tr><td class="ac">ACT-002</td><td>Exam Hall Booking</td><td class="mt">Exam</td><td><span class="status-badge s-approved">Approved</span></td><td class="mt">Jan 28</td></tr>
+              <tr><td class="ac">ACT-003</td><td>Cultural Fest Budget</td><td class="mt">Cultural</td><td><span class="status-badge s-created">Created</span></td><td class="mt">Feb 03</td></tr>
+              <tr><td class="ac">ACT-004</td><td>NAAC Documents</td><td class="mt">NAAC</td><td><span class="status-badge s-rejected">Rejected</span></td><td class="mt">Jan 20</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tab-content" id="tab-security">
+          <div class="security-list">
+            <div class="security-item"><div><div class="si-label">Password</div><div class="si-sub">Last changed 30 days ago</div></div><button class="si-action">Change Password</button></div>
+            <div class="security-item"><div><div class="si-label">Active Session</div><div class="si-sub" id="secSession">SES_XXXXXXX</div></div><span class="si-badge">Active</span></div>
+            <div class="security-item"><div><div class="si-label">Login IP</div><div class="si-sub">192.168.1.x — College LAN</div></div><span class="si-badge">Verified</span></div>
+            <div class="security-item"><div><div class="si-label">Two-Factor Auth</div><div class="si-sub">Adds an extra layer of security</div></div><button class="si-action">Enable 2FA</button></div>
+            <div class="security-item" style="border:none"><div><div class="si-label">Audit Log</div><div class="si-sub">Download your activity history</div></div><button class="si-action">Download</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Profile updated successfully</div>
+<script src="../js/profile.js"></script>
+</body>
+</html>

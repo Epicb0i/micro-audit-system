@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — New Action</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/action-form.css"/>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-text">Micro<span>Audit</span></div>
+    <div class="logo-sub">Committee Tracker</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">⚡</span> Dashboard</a>
+    <a href="action-form.html" class="nav-item active"><span class="nav-icon">＋</span> New Action</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📋</span> My Actions <span class="badge">4</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span> Audit Logs</a>
+    <div class="nav-label">Reports</div>
+    <a href="#" class="nav-item"><span class="nav-icon">📊</span> Analytics</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📁</span> Reports</a>
+    <div class="nav-label">Account</div>
+    <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a>
+    <a href="../index.html" class="nav-item" onclick="sessionStorage.clear()"><span class="nav-icon">🚪</span> Logout</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-card">
+      <div class="avatar">GC</div>
+      <div><div class="uname">Gaurav C.</div><div class="urole">Member</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">New Action Request</div>
+    <span class="breadcrumb"><a href="dashboard.html">Dashboard</a> / New Action</span>
+    <div class="tb-right">
+      <a href="dashboard.html" class="back-btn">← Back</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="form-panel">
+      <div class="fp-header">
+        <h2>Create Action Request</h2>
+        <p>Every field is timestamped and logged to the audit trail automatically.</p>
+      </div>
+      <div class="fp-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Action Title</label>
+            <input type="text" id="actTitle" name="title" placeholder="e.g. Equipment Purchase Approval"/>
+            <div class="field-err" id="errTitle">Title is required</div>
+          </div>
+          <div class="form-group">
+            <label>Action Type</label>
+            <select id="actType" name="type">
+              <option value="">Select type</option>
+              <option>Purchase Request</option>
+              <option>Event Approval</option>
+              <option>Budget Sanction</option>
+              <option>Document Submission</option>
+              <option>Maintenance Request</option>
+              <option>Other</option>
+            </select>
+            <div class="field-err" id="errType">Type is required</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Committee</label>
+            <select id="actCommittee" name="committee">
+              <option value="">Select committee</option>
+              <option>Exam Committee</option>
+              <option>T&amp;P Committee</option>
+              <option>Cultural Committee</option>
+              <option>NAAC Committee</option>
+              <option>Purchase Committee</option>
+              <option>Hostel Committee</option>
+            </select>
+            <div class="field-err" id="errCommittee">Committee is required</div>
+          </div>
+          <div class="form-group">
+            <label>Expected Completion Date</label>
+            <input type="date" id="actDueDate" name="dueDate"/>
+            <div class="field-err" id="errDate">Due date is required</div>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label>Description</label>
+          <textarea id="actDesc" name="description" placeholder="Describe the action, purpose, and expected outcome..."></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Priority Level</label>
+          <div class="priority-grid">
+            <button type="button" class="pri-btn low active" onclick="setPriority(this,'low')">🟢 Low</button>
+            <button type="button" class="pri-btn medium" onclick="setPriority(this,'medium')">🟡 Medium</button>
+            <button type="button" class="pri-btn high" onclick="setPriority(this,'high')">🔴 High</button>
+          </div>
+          <input type="hidden" id="priorityInput" name="priority" value="low"/>
+        </div>
+        <div class="form-group full">
+          <label>Supporting Document <span style="font-weight:400;color:var(--muted)">(Optional)</span></label>
+          <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📎</div>
+            <div style="font-weight:500">Click to attach document</div>
+            <div style="font-size:11px;margin-top:4px;color:var(--muted)">PDF, DOCX, JPG — Max 5MB</div>
+            <input type="file" id="fileInput" name="document" style="display:none" onchange="showFileName(this)"/>
+          </div>
+          <div id="fileName" style="font-size:11px;color:var(--success);margin-top:6px;display:none;font-weight:500;"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Estimated Cost (₹)</label>
+            <input type="number" id="actCost" name="cost" placeholder="e.g. 15000"/>
+          </div>
+          <div class="form-group">
+            <label>Approver</label>
+            <select id="actApprover" name="approver">
+              <option value="">Select head</option>
+              <option>Dr. A. Sharma (Exam)</option>
+              <option>Prof. R. Mehta (Purchase)</option>
+              <option>Dr. P. Joshi (Cultural)</option>
+              <option>Dr. S. Patil (NAAC)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="draft-btn" onclick="saveDraft()">Save Draft</button>
+        <button type="button" class="submit-btn" onclick="submitAction()">Submit for Review</button>
+      </div>
+    </div>
+
+    <div class="side-panel">
+      <div class="info-card">
+        <div class="ic-title">Submission Info</div>
+        <div class="ic-item"><div class="ic-icon">👤</div><div><div class="ic-label">Submitted By</div><div class="ic-val" id="subUser">—</div></div></div>
+        <div class="ic-item"><div class="ic-icon">🏛️</div><div><div class="ic-label">Role</div><div class="ic-val" id="subRole">—</div></div></div>
+        <div class="ic-item"><div class="ic-icon">🕐</div><div><div class="ic-label">Timestamp</div><div class="ic-val" id="subTime">—</div></div></div>
+        <div class="ic-item"><div class="ic-icon">🔑</div><div><div class="ic-label">Session ID</div><div class="ic-val" id="subSession" style="font-size:10px;color:var(--accent)">—</div></div></div>
+      </div>
+
+      <div class="info-card">
+        <div class="ic-title">Action Lifecycle</div>
+        <div class="lifecycle">
+          <div class="lc-step"><div class="lc-left"><div class="lc-dot done"></div><div class="lc-line"></div></div><div class="lc-content"><div class="lc-name">Created</div><div class="lc-desc">Form submitted by member</div></div></div>
+          <div class="lc-step"><div class="lc-left"><div class="lc-dot current"></div><div class="lc-line"></div></div><div class="lc-content"><div class="lc-name">Under Review</div><div class="lc-desc">Committee Head reviews</div></div></div>
+          <div class="lc-step"><div class="lc-left"><div class="lc-dot"></div><div class="lc-line"></div></div><div class="lc-content"><div class="lc-name">Approved / Rejected</div><div class="lc-desc">Decision logged with timestamp</div></div></div>
+          <div class="lc-step"><div class="lc-left"><div class="lc-dot"></div></div><div class="lc-content"><div class="lc-name">Closed</div><div class="lc-desc">Audit record finalized</div></div></div>
+        </div>
+      </div>
+
+      <div class="info-card audit-note">
+        <div class="audit-note-label">🔍 Audit Trail</div>
+        <div class="audit-note-text">Every submission is logged with IP, session ID, role & timestamp via Servlet Filter + Hibernate.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Action submitted successfully</div>
+<script src="../js/User.js"></script>
+<script src="../js/ActionRequest.js"></script>
+<script src="../js/action-form.js"></script>
+</body>
+</html>

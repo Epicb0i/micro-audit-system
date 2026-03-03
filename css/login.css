@@ -1,0 +1,48 @@
+/* login.css — Clean Minimal Theme */
+body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:var(--bg); }
+
+.login-page { display:flex; width:900px; max-width:96vw; min-height:580px; border-radius:16px; overflow:hidden; box-shadow:var(--shadow-lg); animation:fadeUp 0.5s ease both; }
+
+.left-panel { width:340px; background:var(--navy); padding:52px 44px; display:flex; flex-direction:column; justify-content:space-between; flex-shrink:0; position:relative; overflow:hidden; }
+.left-panel::after { content:''; position:absolute; bottom:-60px; right:-60px; width:220px; height:220px; border-radius:50%; border:1px solid rgba(255,255,255,0.06); }
+.left-panel::before { content:''; position:absolute; bottom:-20px; right:-20px; width:120px; height:120px; border-radius:50%; border:1px solid rgba(255,255,255,0.04); }
+
+.lp-top {}
+.lp-badge { display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,0.08); padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600; color:rgba(255,255,255,0.6); letter-spacing:0.5px; margin-bottom:28px; }
+.lp-badge-dot { width:6px; height:6px; background:#34d399; border-radius:50%; animation:blink 2s ease infinite; }
+.lp-title { font-family:'Fraunces',serif; font-size:36px; font-weight:300; color:#fff; line-height:1.15; letter-spacing:-0.5px; }
+.lp-title em { font-style:italic; color:#93c5fd; }
+.lp-desc { margin-top:16px; font-size:13px; color:rgba(255,255,255,0.45); line-height:1.8; }
+
+.lp-stats { display:flex; flex-direction:column; gap:12px; position:relative; z-index:1; }
+.lp-stat { display:flex; align-items:center; gap:14px; }
+.lp-stat-num { font-family:'Fraunces',serif; font-size:24px; font-weight:300; color:#fff; width:64px; flex-shrink:0; letter-spacing:-0.5px; }
+.lp-stat-label { font-size:11px; color:rgba(255,255,255,0.4); font-weight:500; }
+.lp-stat-line { flex:1; height:1px; background:rgba(255,255,255,0.08); }
+
+.right-panel { flex:1; background:#fff; padding:52px 48px; display:flex; flex-direction:column; justify-content:center; gap:0; }
+
+.rp-label { font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.rp-title { font-family:'Fraunces',serif; font-size:26px; font-weight:400; color:var(--navy); letter-spacing:-0.5px; margin-bottom:32px; }
+
+.form-body { display:flex; flex-direction:column; gap:18px; }
+.form-group label { font-size:12px; font-weight:600; color:var(--text); display:block; margin-bottom:6px; }
+.form-group input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:11px 14px; font-family:'Instrument Sans',sans-serif; font-size:13px; color:var(--text); outline:none; transition:border-color 0.15s,box-shadow 0.15s; }
+.form-group input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(37,99,235,0.1); background:#fff; }
+.form-group input::placeholder { color:var(--muted); }
+
+.role-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.role-btn { padding:9px 6px; background:var(--bg); border:1.5px solid var(--border); border-radius:8px; color:var(--text2); font-family:'Instrument Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s; text-align:center; }
+.role-btn:hover { border-color:var(--navy); color:var(--navy); }
+.role-btn.active { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+.error-msg { font-size:12px; color:var(--danger); background:#fef2f2; border:1px solid #fecaca; padding:10px 14px; border-radius:8px; display:none; font-weight:500; }
+
+.login-btn { width:100%; padding:12px; background:var(--navy); border:none; border-radius:8px; font-family:'Instrument Sans',sans-serif; font-size:13px; font-weight:600; color:#fff; cursor:pointer; transition:all 0.2s; letter-spacing:0.3px; margin-top:4px; }
+.login-btn:hover { background:var(--navy2); box-shadow:0 4px 16px rgba(26,39,68,0.25); }
+.login-btn:disabled { opacity:0.6; cursor:not-allowed; }
+
+.form-footer { margin-top:20px; font-size:12px; color:var(--muted); text-align:center; }
+.form-footer a { color:var(--accent); font-weight:500; }
+
+@media(max-width:680px) { .left-panel{display:none} .right-panel{padding:36px 24px} }

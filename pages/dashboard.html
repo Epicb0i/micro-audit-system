@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-text">Micro<span>Audit</span></div>
+    <div class="logo-sub">Committee Tracker</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Main</div>
+    <a href="dashboard.html" class="nav-item active"><span class="nav-icon">⚡</span> Dashboard</a>
+    <a href="action-form.html" class="nav-item"><span class="nav-icon">＋</span> New Action</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📋</span> My Actions <span class="badge">4</span></a>
+    <a href="#" class="nav-item"><span class="nav-icon">🔍</span> Audit Logs</a>
+    <div class="nav-label">Reports</div>
+    <a href="#" class="nav-item"><span class="nav-icon">📊</span> Analytics</a>
+    <a href="#" class="nav-item"><span class="nav-icon">📁</span> Reports</a>
+    <div class="nav-label">Account</div>
+    <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a>
+    <a href="../index.html" class="nav-item" onclick="sessionStorage.clear()"><span class="nav-icon">🚪</span> Logout</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-card">
+      <div class="avatar" id="avatarInitial">GC</div>
+      <div><div class="uname" id="sidebarName">Loading...</div><div class="urole" id="sidebarRole">Member</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Dashboard</div>
+    <div class="tb-right">
+      <div class="tb-time" id="liveClock">--:--:--</div>
+      <button class="icon-btn" title="Notifications">🔔<span class="dot"></span></button>
+      <a href="action-form.html" class="new-action-btn">＋ New Action</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="kpi-grid">
+      <div class="kpi c1">
+        <div class="kpi-lbl">Total Actions</div>
+        <div class="kpi-val" id="kTotal">0</div>
+        <div class="kpi-sub">This semester</div>
+        <div class="kpi-trend">📋</div>
+      </div>
+      <div class="kpi c2">
+        <div class="kpi-lbl">Delayed</div>
+        <div class="kpi-val" id="kDelayed">0</div>
+        <div class="kpi-sub">Require attention</div>
+        <div class="kpi-trend">⏰</div>
+      </div>
+      <div class="kpi c3">
+        <div class="kpi-lbl">Approved</div>
+        <div class="kpi-val" id="kApproved">0</div>
+        <div class="kpi-sub">Completed on time</div>
+        <div class="kpi-trend">✅</div>
+      </div>
+      <div class="kpi c4">
+        <div class="kpi-lbl">Avg Delay</div>
+        <div class="kpi-val" id="kAvgDelay">—</div>
+        <div class="kpi-sub">Across committees</div>
+        <div class="kpi-trend">📊</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Recent Actions</span>
+          <a href="#" class="ph-link">View all</a>
+        </div>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Title</th><th>Committee</th><th>Status</th><th>Delay</th></tr>
+          </thead>
+          <tbody id="actionBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Activity Feed</span>
+          <a href="#" class="ph-link">All logs</a>
+        </div>
+        <div class="feed" id="feedList"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph">
+        <span class="ph-title">Committee Delay Analysis</span>
+        <span style="font-size:11px;color:var(--muted)">Java Streams output</span>
+      </div>
+      <div class="delay-bar-wrap" id="delayBars"></div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/User.js"></script>
+<script src="../js/Action.js"></script>
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

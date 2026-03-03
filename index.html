@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/global.css"/>
+  <link rel="stylesheet" href="css/login.css"/>
+</head>
+<body>
+<div class="login-page">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="lp-top">
+      <div class="lp-badge"><span class="lp-badge-dot"></span> System Live</div>
+      <div class="lp-title">Micro<em>Audit</em><br/>System</div>
+      <p class="lp-desc">Accountability & transparency platform for college administrative committees.</p>
+    </div>
+    <div class="lp-stats">
+      <div class="lp-stat">
+        <div class="lp-stat-num">1,248</div>
+        <div class="lp-stat-line"></div>
+        <div class="lp-stat-label">Actions Tracked</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-num">4,790</div>
+        <div class="lp-stat-line"></div>
+        <div class="lp-stat-label">Audit Logs</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-num">12</div>
+        <div class="lp-stat-line"></div>
+        <div class="lp-stat-label">Committees</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="rp-label">Welcome back</div>
+    <div class="rp-title">Sign in to your account</div>
+
+    <div class="form-body">
+      <div class="form-group">
+        <label>Staff / Employee ID</label>
+        <input type="text" id="userId" name="userId" placeholder="e.g. STAFF_2024_001"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password"/>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <div class="role-grid">
+          <button type="button" class="role-btn active" onclick="selectRole(this)">Member</button>
+          <button type="button" class="role-btn" onclick="selectRole(this)">Head</button>
+          <button type="button" class="role-btn" onclick="selectRole(this)">Auditor</button>
+        </div>
+        <input type="hidden" id="selectedRole" name="role" value="Member"/>
+      </div>
+      <div class="error-msg" id="errMsg">Please fill in all fields.</div>
+      <button type="button" class="login-btn" id="loginBtn" onclick="handleLogin()">Sign In</button>
+    </div>
+
+    <div class="form-footer">
+      Having trouble? <a href="#">Contact Administrator</a>
+    </div>
+  </div>
+
+</div>
+<script src="js/User.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
