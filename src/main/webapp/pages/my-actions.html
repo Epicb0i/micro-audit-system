@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — My Actions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <style>
+    .filter-bar{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+    .filter-bar select,.filter-bar input{padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:13px;font-family:inherit}
+    .filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--accent)}
+    .actions-table{width:100%;border-collapse:collapse;font-size:13px}
+    .actions-table th{text-align:left;padding:10px 14px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+    .actions-table td{padding:12px 14px;border-bottom:1px solid var(--border)}
+    .actions-table tr:hover{background:rgba(99,102,241,.04)}
+    .status-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+    .s-created{background:#e0e7ff;color:#3730a3}
+    .s-review{background:#fef3c7;color:#92400e}
+    .s-approved{background:#d1fae5;color:#065f46}
+    .s-rejected{background:#fee2e2;color:#991b1b}
+    .s-closed{background:#e5e7eb;color:#374151}
+    .delay-ok{color:var(--accent3)}
+    .delay-warn{color:var(--warn)}
+    .delay-bad{color:var(--accent2)}
+    .action-id{color:var(--accent);font-weight:600;cursor:pointer}
+    .action-id:hover{text-decoration:underline}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-state .icon{font-size:48px;margin-bottom:12px}
+    .empty-state h3{margin-bottom:8px;color:var(--text)}
+    .count-badge{background:var(--accent);color:#fff;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-left:8px}
+    .action-detail{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:100;justify-content:center;align-items:center}
+    .action-detail.open{display:flex}
+    .detail-card{background:var(--card);border-radius:16px;padding:28px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .detail-card h3{margin-bottom:16px;font-family:'Fraunces',serif}
+    .detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+    .detail-row .label{color:var(--muted)}
+    .detail-close{margin-top:16px;padding:8px 20px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+    .detail-close:hover{opacity:.9}
+    @media(max-width:768px){
+      .filter-bar{flex-direction:column;gap:8px}
+      .filter-bar select,.filter-bar input{width:100%}
+      .actions-table{display:block;overflow-x:auto;white-space:nowrap}
+      .detail-card{padding:20px;max-width:95%}
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-text">Micro<span>Audit</span></div>
+    <div class="logo-sub">Committee Tracker</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">⚡</span> Dashboard</a>
+    <a href="action-form.html" class="nav-item"><span class="nav-icon">＋</span> New Action</a>
+    <a href="my-actions.html" class="nav-item active"><span class="nav-icon">📋</span> My Actions <span class="badge">0</span></a>
+    <a href="audit-logs.html" class="nav-item"><span class="nav-icon">🔍</span> Audit Logs</a>
+    <div class="nav-label">Reports</div>
+    <a href="analytics.html" class="nav-item"><span class="nav-icon">📊</span> Analytics</a>
+    <a href="reports.html" class="nav-item"><span class="nav-icon">📁</span> Reports</a>
+    <div class="nav-label">Account</div>
+    <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a>
+    <a href="../index.html" class="nav-item" onclick="sessionStorage.clear()"><span class="nav-icon">🚪</span> Logout</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-card">
+      <div class="avatar" id="avatarInitial">--</div>
+      <div><div class="uname" id="sidebarName">Loading...</div><div class="urole" id="sidebarRole">--</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <div class="topbar-title">My Actions <span class="count-badge" id="totalCount">0</span></div>
+    <div class="tb-right">
+      <div class="tb-time" id="liveClock">--:--:--</div>
+      <a href="action-form.html" class="new-action-btn">＋ New Action</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Filters -->
+    <div class="filter-bar">
+      <select id="filterStatus" onchange="applyFilters()">
+        <option value="">All Status</option>
+        <option value="Created">Created</option>
+        <option value="Review">Under Review</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Closed">Closed</option>
+      </select>
+      <select id="filterCommittee" onchange="applyFilters()">
+        <option value="">All Committees</option>
+        <option>Exam Committee</option>
+        <option>T&P Committee</option>
+        <option>Cultural Committee</option>
+        <option>NAAC Committee</option>
+        <option>Purchase Committee</option>
+        <option>Hostel Committee</option>
+      </select>
+      <input type="text" id="searchBox" placeholder="Search by title or ID..." oninput="applyFilters()"/>
+    </div>
+
+    <!-- KPI Summary -->
+    <div class="kpi-grid">
+      <div class="kpi c1"><div class="kpi-lbl">Total</div><div class="kpi-val" id="kTotal">0</div><div class="kpi-sub">My actions</div><div class="kpi-trend">📋</div></div>
+      <div class="kpi c2"><div class="kpi-lbl">Delayed</div><div class="kpi-val" id="kDelayed">0</div><div class="kpi-sub">Need attention</div><div class="kpi-trend">⏰</div></div>
+      <div class="kpi c3"><div class="kpi-lbl">Approved</div><div class="kpi-val" id="kApproved">0</div><div class="kpi-sub">Completed</div><div class="kpi-trend">✅</div></div>
+      <div class="kpi c4"><div class="kpi-lbl">Pending</div><div class="kpi-val" id="kPending">0</div><div class="kpi-sub">In progress</div><div class="kpi-trend">🔄</div></div>
+    </div>
+
+    <!-- Actions Table -->
+    <div class="panel" style="margin-top:20px">
+      <div class="ph">
+        <span class="ph-title">Action History</span>
+      </div>
+      <div id="tableWrap">
+        <table class="actions-table">
+          <thead>
+            <tr><th>ID</th><th>Title</th><th>Committee</th><th>Type</th><th>Priority</th><th>Status</th><th>Delay</th><th>Created</th></tr>
+          </thead>
+          <tbody id="actionBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="icon">📋</div>
+        <h3>No actions found</h3>
+        <p>Try adjusting your filters, or <a href="action-form.html">create a new action</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="action-detail" id="detailModal">
+  <div class="detail-card">
+    <h3 id="detailTitle">Action Details</h3>
+    <div id="detailBody"></div>
+    <button class="detail-close" onclick="closeDetail()">Close</button>
+  </div>
+</div>
+
+<script src="../js/User.js"></script>
+<script src="../js/Action.js"></script>
+<script>
+// ── Auth guard ──
+const currentUser = User.fromSession();
+if (!currentUser) window.location.href = '../index.html';
+
+// ── Sample data (matches dashboard.js; replaced by servlet fetch when deployed) ──
+let allActions = [
+  { id:'ACT-001', title:'Equipment Purchase Approval',  committee:'Purchase Committee',  type:'Purchase Request',     priority:'high',   status:'Review',   createdAt:'2025-02-01', expectedClose:'2025-02-05', createdBy:'STF001' },
+  { id:'ACT-002', title:'Exam Hall Booking',             committee:'Exam Committee',      type:'Event Approval',       priority:'medium', status:'Approved', createdAt:'2025-01-28', expectedClose:'2025-02-02', createdBy:'STF002' },
+  { id:'ACT-003', title:'Cultural Fest Budget Sanction',  committee:'Cultural Committee',  type:'Budget Sanction',      priority:'high',   status:'Created',  createdAt:'2025-02-03', expectedClose:'2025-02-10', createdBy:'STF003' },
+  { id:'ACT-004', title:'NAAC Document Submission',       committee:'NAAC Committee',      type:'Document Submission',  priority:'low',    status:'Rejected', createdAt:'2025-01-20', expectedClose:'2025-01-25', createdBy:'STF004' },
+  { id:'ACT-005', title:'Hostel Maintenance Request',     committee:'Hostel Committee',    type:'Maintenance Request',  priority:'medium', status:'Closed',   createdAt:'2025-01-15', expectedClose:'2025-01-18', createdBy:'STF005' },
+];
+
+// Try fetching from servlet, fallback to sample data
+(function loadActions() {
+  fetch('../api/actions?filter=user&value=' + encodeURIComponent(currentUser.id))
+    .then(r => r.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        allActions = data.map(a => ({
+          id: a.actionCode || a.id,
+          title: a.title,
+          committee: a.committeeName || a.committee,
+          type: a.type || '—',
+          priority: a.priority || 'medium',
+          status: a.status,
+          createdAt: a.createdAt,
+          expectedClose: a.expectedClose,
+          createdBy: a.createdBy || currentUser.id
+        }));
+      }
+      // Also load locally submitted actions from sessionStorage
+      loadLocalActions();
+      renderAll();
+    })
+    .catch(() => {
+      console.warn('Servlet unavailable — using sample + local actions');
+      loadLocalActions();
+      renderAll();
+    });
+})();
+
+function loadLocalActions() {
+  const local = JSON.parse(sessionStorage.getItem('pendingActions') || '[]');
+  local.forEach((a, i) => {
+    allActions.push({
+      id: 'ACT-L' + (i + 1).toString().padStart(2, '0'),
+      title: a.title,
+      committee: a.committee,
+      type: a.type || '—',
+      priority: a.priority || 'low',
+      status: 'Created',
+      createdAt: a.timestamp ? a.timestamp.split('T')[0] : new Date().toISOString().split('T')[0],
+      expectedClose: a.dueDate || '—',
+      createdBy: currentUser.id
+    });
+  });
+}
+
+function statusClass(s) {
+  return { Created:'s-created', Review:'s-review', Approved:'s-approved', Rejected:'s-rejected', Closed:'s-closed' }[s] || 's-created';
+}
+
+function priColor(p) {
+  return { low:'var(--accent3)', medium:'var(--warn)', high:'var(--accent2)' }[p] || 'var(--muted)';
+}
+
+function getDelayHours(a) {
+  if (a.status === 'Approved' || a.status === 'Closed') return 0;
+  if (!a.expectedClose || a.expectedClose === '—') return 0;
+  const diff = Date.now() - new Date(a.expectedClose).getTime();
+  return Math.max(0, Math.floor(diff / 3600000));
+}
+
+function applyFilters() {
+  renderAll();
+}
+
+function getFiltered() {
+  const status    = document.getElementById('filterStatus').value;
+  const committee = document.getElementById('filterCommittee').value;
+  const search    = document.getElementById('searchBox').value.toLowerCase();
+
+  return allActions.filter(a => {
+    if (status && a.status !== status) return false;
+    if (committee && a.committee !== committee) return false;
+    if (search && !a.title.toLowerCase().includes(search) && !a.id.toLowerCase().includes(search)) return false;
+    return true;
+  });
+}
+
+function renderAll() {
+  const filtered = getFiltered();
+
+  // KPIs
+  document.getElementById('kTotal').textContent    = allActions.length;
+  document.getElementById('kDelayed').textContent   = allActions.filter(a => getDelayHours(a) > 0).length;
+  document.getElementById('kApproved').textContent  = allActions.filter(a => a.status === 'Approved' || a.status === 'Closed').length;
+  document.getElementById('kPending').textContent   = allActions.filter(a => a.status === 'Created' || a.status === 'Review').length;
+  document.getElementById('totalCount').textContent = allActions.length;
+
+  // Update badge in sidebar
+  const badge = document.querySelector('.nav-item.active .badge');
+  if (badge) badge.textContent = allActions.length;
+
+  // Table
+  const tbody = document.getElementById('actionBody');
+  const empty = document.getElementById('emptyState');
+  const table = document.getElementById('tableWrap');
+
+  if (filtered.length === 0) {
+    table.style.display = 'none';
+    empty.style.display = 'block';
+  } else {
+    table.style.display = 'block';
+    empty.style.display = 'none';
+    tbody.innerHTML = filtered.map(a => {
+      const delay = getDelayHours(a);
+      const dc = delay === 0 ? 'delay-ok' : delay < 24 ? 'delay-warn' : 'delay-bad';
+      return `<tr>
+        <td class="action-id" onclick="showDetail('${a.id}')">${a.id}</td>
+        <td>${a.title}</td>
+        <td style="color:var(--muted)">${a.committee}</td>
+        <td>${a.type}</td>
+        <td><span style="color:${priColor(a.priority)};font-weight:600;text-transform:capitalize">${a.priority}</span></td>
+        <td><span class="status-badge ${statusClass(a.status)}">${a.status}</span></td>
+        <td class="${dc}">${delay === 0 ? 'On time' : delay + 'h late'}</td>
+        <td style="color:var(--muted);font-size:12px">${a.createdAt}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+function showDetail(id) {
+  const a = allActions.find(x => x.id === id);
+  if (!a) return;
+  const delay = getDelayHours(a);
+  document.getElementById('detailTitle').textContent = a.id + ' — ' + a.title;
+  document.getElementById('detailBody').innerHTML = [
+    ['Committee', a.committee],
+    ['Type', a.type],
+    ['Priority', a.priority],
+    ['Status', a.status],
+    ['Created', a.createdAt],
+    ['Expected Close', a.expectedClose],
+    ['Delay', delay === 0 ? 'On time' : delay + ' hours late'],
+    ['Created By', a.createdBy || '—']
+  ].map(([l, v]) => `<div class="detail-row"><span class="label">${l}</span><span>${v}</span></div>`).join('');
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailModal').classList.remove('open');
+}
+
+// ── User sidebar ──
+(function loadUser() {
+  if (currentUser) {
+    const initials = currentUser.name ? currentUser.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : currentUser.id.substring(0, 2).toUpperCase();
+    document.getElementById('avatarInitial').textContent = initials;
+    document.getElementById('sidebarName').textContent   = currentUser.name || currentUser.id;
+    document.getElementById('sidebarRole').textContent   = currentUser.role;
+  }
+})();
+
+// ── Clock ──
+function updateClock() { document.getElementById('liveClock').textContent = new Date().toLocaleTimeString(); }
+setInterval(updateClock, 1000);
+updateClock();
+
+// Close modal on background click
+document.getElementById('detailModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDetail();
+});
+</script>
+<script>
+(function(){
+  const btn=document.getElementById('hamburgerBtn'),sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+  if(!btn)return;
+  function toggle(){sb.classList.toggle('open');ov.classList.toggle('open');}
+  btn.addEventListener('click',toggle);
+  ov.addEventListener('click',toggle);
+})();
+</script>
+</body>
+</html>

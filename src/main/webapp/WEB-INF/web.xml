@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+
+    <display-name>MicroAudit System</display-name>
+
+    <!-- ═══════════════════════════════════════
+         SERVLETS
+         ═══════════════════════════════════════ -->
+
+    <!-- Login Servlet -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.microaudit.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Action Servlet -->
+    <servlet>
+        <servlet-name>ActionServlet</servlet-name>
+        <servlet-class>com.microaudit.servlet.ActionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ActionServlet</servlet-name>
+        <url-pattern>/ActionServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Dashboard Servlet -->
+    <servlet>
+        <servlet-name>DashboardServlet</servlet-name>
+        <servlet-class>com.microaudit.servlet.DashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DashboardServlet</servlet-name>
+        <url-pattern>/DashboardServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Profile Servlet -->
+    <servlet>
+        <servlet-name>ProfileServlet</servlet-name>
+        <servlet-class>com.microaudit.servlet.ProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProfileServlet</servlet-name>
+        <url-pattern>/ProfileServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- Audit Log Servlet -->
+    <servlet>
+        <servlet-name>AuditLogServlet</servlet-name>
+        <servlet-class>com.microaudit.servlet.AuditLogServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuditLogServlet</servlet-name>
+        <url-pattern>/AuditLogServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- ═══════════════════════════════════════
+         FILTERS
+         ═══════════════════════════════════════ -->
+
+    <!-- Audit Filter — logs every request to audit trail -->
+    <filter>
+        <filter-name>AuditFilter</filter-name>
+        <filter-class>com.microaudit.util.AuditFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuditFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ═══════════════════════════════════════
+         WELCOME & SESSION
+         ═══════════════════════════════════════ -->
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+</web-app>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/global.css"/>
+  <link rel="stylesheet" href="css/login.css"/>
+  <style>
+    .login-page{min-height:auto}
+    .right-panel{padding:40px 44px;gap:0}
+    .form-body{gap:14px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-group select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-family:'Instrument Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .15s,box-shadow .15s}
+    .form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:#fff}
+    .pw-strength{height:3px;border-radius:3px;margin-top:6px;background:var(--border);overflow:hidden}
+    .pw-strength .pw-bar{height:100%;border-radius:3px;transition:width .3s,background .3s;width:0}
+    .pw-hint{font-size:10px;color:var(--muted);margin-top:4px}
+    .terms{font-size:11px;color:var(--muted);line-height:1.6}
+    .terms a{color:var(--accent);font-weight:500}
+    .success-msg{font-size:12px;color:var(--success);background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 14px;border-radius:8px;display:none;font-weight:500}
+    @media(max-width:680px){
+      .form-row{grid-template-columns:1fr}
+      .right-panel{padding:28px 20px}
+      .role-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+      .role-btn{padding:8px 4px;font-size:11px}
+    }
+    @media(max-width:400px){
+      .right-panel{padding:20px 16px}
+      .login-btn{padding:14px}
+    }
+  </style>
+</head>
+<body>
+<div class="login-page">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="lp-top">
+      <div class="lp-badge"><span class="lp-badge-dot"></span> System Live</div>
+      <div class="lp-title">Micro<em>Audit</em><br/>System</div>
+      <p class="lp-desc">Join the accountability & transparency platform for college administrative committees.</p>
+    </div>
+    <div class="lp-stats">
+      <div class="lp-stat">
+        <div class="lp-stat-num">1,248</div>
+        <div class="lp-stat-line"></div>
+        <div class="lp-stat-label">Actions Tracked</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-num">4,790</div>
+        <div class="lp-stat-line"></div>
+        <div class="lp-stat-label">Audit Logs</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-num">12</div>
+        <div class="lp-stat-line"></div>
+        <div class="lp-stat-label">Committees</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="rp-label">Get Started</div>
+    <div class="rp-title">Create your account</div>
+
+    <div class="form-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="fullName" placeholder="e.g. Dr. Sharma"/>
+        </div>
+        <div class="form-group">
+          <label>Staff / Employee ID</label>
+          <input type="text" id="staffId" placeholder="e.g. STF007"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="name@college.edu"/>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="+91 9XXXXXXXXX"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Department</label>
+          <select id="department">
+            <option value="">Select department</option>
+            <option>Computer Engineering</option>
+            <option>Information Technology</option>
+            <option>Electronics</option>
+            <option>Mechanical</option>
+            <option>Civil</option>
+            <option>Administration</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Committee</label>
+          <select id="committee">
+            <option value="">Select committee</option>
+            <option value="1">Exam Committee</option>
+            <option value="2">T&amp;P Committee</option>
+            <option value="3">Cultural Committee</option>
+            <option value="4">NAAC Committee</option>
+            <option value="5">Purchase Committee</option>
+            <option value="6">Hostel Committee</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Role</label>
+        <div class="role-grid">
+          <button type="button" class="role-btn active" onclick="selectRole(this)">Member</button>
+          <button type="button" class="role-btn" onclick="selectRole(this)">Head</button>
+          <button type="button" class="role-btn" onclick="selectRole(this)">Auditor</button>
+        </div>
+        <input type="hidden" id="selectedRole" value="Member"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Min 6 characters" oninput="checkStrength()"/>
+        <div class="pw-strength"><div class="pw-bar" id="pwBar"></div></div>
+        <div class="pw-hint" id="pwHint">Use 6+ characters with a mix of letters and numbers</div>
+      </div>
+
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="confirmPw" placeholder="Re-enter password"/>
+      </div>
+
+      <div class="error-msg" id="errMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+
+      <div class="terms">
+        By creating an account, you agree to the <a href="#">Terms of Service</a> and acknowledge the <a href="#">Audit Policy</a>.
+      </div>
+
+      <button type="button" class="login-btn" id="signupBtn" onclick="handleSignup()">Create Account</button>
+    </div>
+
+    <div class="form-footer">
+      Already have an account? <a href="index.html">Sign In</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/User.js"></script>
+<script>
+// Enter key triggers signup
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); handleSignup(); }
+});
+function selectRole(btn) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('selectedRole').value = btn.textContent.trim();
+}
+
+function checkStrength() {
+  const pw = document.getElementById('password').value;
+  const bar = document.getElementById('pwBar');
+  const hint = document.getElementById('pwHint');
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  const levels = [
+    { w:'0%', bg:'var(--border)', text:'Use 6+ characters with a mix of letters and numbers' },
+    { w:'20%', bg:'var(--danger)', text:'Weak — add more characters' },
+    { w:'40%', bg:'var(--warn)', text:'Fair — try adding numbers or symbols' },
+    { w:'60%', bg:'var(--warn)', text:'Good — almost there' },
+    { w:'80%', bg:'var(--success)', text:'Strong password' },
+    { w:'100%', bg:'var(--success)', text:'Very strong password' }
+  ];
+  const l = levels[score];
+  bar.style.width = l.w;
+  bar.style.background = l.bg;
+  hint.textContent = l.text;
+}
+
+function handleSignup() {
+  const name      = document.getElementById('fullName').value.trim();
+  const staffId   = document.getElementById('staffId').value.trim();
+  const email     = document.getElementById('email').value.trim();
+  const phone     = document.getElementById('phone').value.trim();
+  const dept      = document.getElementById('department').value;
+  const committee = document.getElementById('committee').value;
+  const role      = document.getElementById('selectedRole').value;
+  const password  = document.getElementById('password').value;
+  const confirmPw = document.getElementById('confirmPw').value;
+
+  const err = document.getElementById('errMsg');
+  const suc = document.getElementById('successMsg');
+  const btn = document.getElementById('signupBtn');
+
+  err.style.display = 'none';
+  suc.style.display = 'none';
+
+  // Validate
+  if (!name || !staffId || !email || !dept || !password) {
+    err.style.display = 'block';
+    err.textContent = '⚠ Please fill in all required fields.';
+    return;
+  }
+  if (password.length < 6) {
+    err.style.display = 'block';
+    err.textContent = '⚠ Password must be at least 6 characters.';
+    return;
+  }
+  if (password !== confirmPw) {
+    err.style.display = 'block';
+    err.textContent = '⚠ Passwords do not match.';
+    return;
+  }
+
+  btn.textContent = 'Creating Account...';
+  btn.disabled = true;
+
+  // Try real servlet first, fallback to demo
+  fetch('api/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ name, staffId, email, phone, department: dept, committeeId: committee, role, password })
+  })
+  .then(r => r.json().then(data => ({ ok: r.ok, data })))
+  .then(({ ok, data }) => {
+    if (ok && data.success) {
+      // Auto-login: create session and go to dashboard
+      const user = new User(data.staffId || staffId.toUpperCase(), role);
+      user.name = data.name || name;
+      user.department = dept;
+      user.email = email;
+      user.phone = phone;
+      user.committee = document.getElementById('committee').selectedOptions[0]?.textContent || '';
+      sessionStorage.setItem('currentUser', user.toJSON());
+      suc.style.display = 'block';
+      suc.textContent = '✓ Account created! Logging you in...';
+      setTimeout(() => window.location.href = 'pages/dashboard.html', 1200);
+    } else {
+      err.style.display = 'block';
+      err.textContent = '⚠ ' + (data.message || 'Signup failed.');
+      btn.textContent = 'Create Account';
+      btn.disabled = false;
+    }
+  })
+  .catch(() => {
+    // Demo mode: store locally and redirect
+    console.warn('Servlet unavailable — demo signup');
+    const existing = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    if (existing.find(u => u.staffId === staffId.toUpperCase())) {
+      err.style.display = 'block';
+      err.textContent = '⚠ Staff ID already registered.';
+      btn.textContent = 'Create Account';
+      btn.disabled = false;
+      return;
+    }
+    existing.push({ name, staffId: staffId.toUpperCase(), email, phone, department: dept, committee, role, password });
+    localStorage.setItem('registeredUsers', JSON.stringify(existing));
+    // Auto-login: create session and go to dashboard
+    const demoUser = new User(staffId.toUpperCase(), role);
+    demoUser.name = name;
+    demoUser.department = dept;
+    demoUser.email = email;
+    demoUser.phone = phone;
+    demoUser.committee = document.getElementById('committee').selectedOptions[0]?.textContent || '';
+    sessionStorage.setItem('currentUser', demoUser.toJSON());
+    suc.style.display = 'block';
+    suc.textContent = '✓ Account created! Logging you in...';
+    setTimeout(() => window.location.href = 'pages/dashboard.html', 1200);
+  });
+}
+</script>
+</body>
+</html>

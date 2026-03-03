@@ -1,0 +1,38 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!--
+    Hibernate configuration for Micro-Audit System
+    Covers: Hibernate ORM practical
+-->
+<hibernate-configuration>
+    <session-factory>
+        <!-- MySQL connection -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/micro_audit?useSSL=false&amp;serverTimezone=UTC</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">G@ur@v@10</property>
+
+        <!-- Hibernate dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Connection pool -->
+        <property name="hibernate.connection.pool_size">10</property>
+
+        <!-- Show SQL in console (disable in production) -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <!-- Schema update strategy -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Current session context -->
+        <property name="hibernate.current_session_context_class">thread</property>
+
+        <!-- Entity mappings -->
+        <mapping class="com.microaudit.model.User"/>
+        <mapping class="com.microaudit.model.Committee"/>
+        <mapping class="com.microaudit.model.Action"/>
+        <mapping class="com.microaudit.model.AuditLog"/>
+    </session-factory>
+</hibernate-configuration>

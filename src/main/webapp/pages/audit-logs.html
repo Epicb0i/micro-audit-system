@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MicroAudit — Audit Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="../css/global.css"/>
+    <link rel="stylesheet" href="../css/dashboard.css"/>
+    <style>
+        .log-activity { display:inline-flex; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+        .log-login    { background:#eff6ff; color:#2563eb; }
+        .log-action   { background:#f0fdf4; color:#16a34a; }
+        .log-status   { background:#fffbeb; color:#d97706; }
+        .log-http     { background:#f5f5f4; color:#78716c; }
+        .log-failed   { background:#fef2f2; color:#dc2626; }
+        .empty-state  { padding:60px 22px; text-align:center; color:var(--muted); font-size:14px; }
+    </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="logo-wrap">
+        <div class="logo-text">Micro<span>Audit</span></div>
+        <div class="logo-sub">Committee Tracker</div>
+    </div>
+    <nav class="nav">
+        <div class="nav-label">Main</div>
+        <a href="dashboard.html" class="nav-item"><span class="nav-icon">⚡</span> Dashboard</a>
+        <a href="action-form.html" class="nav-item"><span class="nav-icon">＋</span> New Action</a>
+        <a href="my-actions.html" class="nav-item"><span class="nav-icon">📋</span> My Actions <span class="badge">4</span></a>
+        <a href="audit-logs.html" class="nav-item active"><span class="nav-icon">🔍</span> Audit Logs</a>
+        <div class="nav-label">Reports</div>
+        <a href="analytics.html" class="nav-item"><span class="nav-icon">📊</span> Analytics</a>
+        <a href="reports.html" class="nav-item"><span class="nav-icon">📁</span> Reports</a>
+        <div class="nav-label">Account</div>
+        <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a>
+        <a href="../index.html" class="nav-item" onclick="sessionStorage.clear()"><span class="nav-icon">🚪</span> Logout</a>
+    </nav>
+    <div class="sidebar-foot">
+        <div class="user-card">
+            <div class="avatar" id="avatarInitial">GC</div>
+            <div><div class="uname" id="sidebarName">Loading...</div><div class="urole" id="sidebarRole">Member</div></div>
+        </div>
+    </div>
+</aside>
+
+<div class="main">
+    <div class="topbar">
+        <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+        <div class="topbar-title">Audit Logs</div>
+        <div class="tb-right">
+            <span class="tb-time" id="logCount">Loading...</span>
+            <a href="dashboard.html" class="back-btn">← Back</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="panel">
+            <div class="ph">
+                <span class="ph-title">Audit Trail</span>
+                <span style="font-size:11px;color:var(--muted)">Who did what, when, and from where</span>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>Activity</th><th>User</th><th>Role</th><th>Action</th><th>Details</th><th>IP</th><th>Time</th></tr>
+                </thead>
+                <tbody id="logBody">
+                    <tr><td colspan="7" class="empty-state">Loading audit logs...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="../js/User.js"></script>
+<script>
+    // Load user info
+    const u = User.fromSession();
+    if (u) {
+        document.getElementById('avatarInitial').textContent = u.id.substring(0, 2).toUpperCase();
+        document.getElementById('sidebarName').textContent = u.id;
+        document.getElementById('sidebarRole').textContent = u.role;
+    }
+
+    // Fetch audit logs from servlet
+    fetch('../AuditLogServlet')
+        .then(r => r.json())
+        .then(logs => {
+            document.getElementById('logCount').textContent = logs.length + ' entries';
+            const activityClass = {
+                'LOGIN_SUCCESS': 'log-login',
+                'LOGIN_FAILED': 'log-failed',
+                'ACTION_CREATED': 'log-action',
+                'STATUS_CHANGED': 'log-status',
+                'PROFILE_UPDATED': 'log-login',
+                'HTTP_REQUEST': 'log-http'
+            };
+            document.getElementById('logBody').innerHTML = logs.map(log =>
+                `<tr>
+                    <td><span class="log-activity ${activityClass[log.activity] || 'log-http'}">${log.activity}</span></td>
+                    <td>${log.userName || '—'}</td>
+                    <td style="color:var(--muted)">${log.role || '—'}</td>
+                    <td style="color:var(--accent)">${log.actionCode || '—'}</td>
+                    <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${log.details || ''}</td>
+                    <td style="font-family:monospace;font-size:11px;color:var(--muted)">${log.ipAddress || ''}</td>
+                    <td style="font-size:11px;color:var(--muted)">${log.createdAt || ''}</td>
+                </tr>`
+            ).join('');
+        })
+        .catch(() => {
+            // Fallback: show sample data if servlet not running
+            document.getElementById('logBody').innerHTML = `
+                <tr><td><span class="log-activity log-action">ACTION_CREATED</span></td><td>Gaurav Chopde</td><td style="color:var(--muted)">Member</td><td style="color:var(--accent)">ACT-001</td><td style="font-size:11px">Created action ACT-001</td><td style="font-family:monospace;font-size:11px;color:var(--muted)">192.168.1.10</td><td style="font-size:11px;color:var(--muted)">2025-02-01 09:14</td></tr>
+                <tr><td><span class="log-activity log-status">STATUS_CHANGED</span></td><td>Prof. R. Mehta</td><td style="color:var(--muted)">Head</td><td style="color:var(--accent)">ACT-001</td><td style="font-size:11px">Status changed to Review</td><td style="font-family:monospace;font-size:11px;color:var(--muted)">192.168.1.20</td><td style="font-size:11px;color:var(--muted)">2025-02-01 10:30</td></tr>
+                <tr><td><span class="log-activity log-login">LOGIN_SUCCESS</span></td><td>Gaurav Chopde</td><td style="color:var(--muted)">Member</td><td style="color:var(--accent)">—</td><td style="font-size:11px">User logged in</td><td style="font-family:monospace;font-size:11px;color:var(--muted)">192.168.1.10</td><td style="font-size:11px;color:var(--muted)">2025-02-01 09:00</td></tr>
+                <tr><td><span class="log-activity log-action">ACTION_CREATED</span></td><td>Gaurav Chopde</td><td style="color:var(--muted)">Member</td><td style="color:var(--accent)">ACT-003</td><td style="font-size:11px">Created action ACT-003</td><td style="font-family:monospace;font-size:11px;color:var(--muted)">192.168.1.10</td><td style="font-size:11px;color:var(--muted)">2025-02-03 09:14</td></tr>
+                <tr><td><span class="log-activity log-status">STATUS_CHANGED</span></td><td>Dr. S. Patil</td><td style="color:var(--muted)">Head</td><td style="color:var(--accent)">ACT-004</td><td style="font-size:11px">Status changed to Rejected</td><td style="font-family:monospace;font-size:11px;color:var(--muted)">192.168.1.22</td><td style="font-size:11px;color:var(--muted)">2025-01-22 14:15</td></tr>
+            `;
+            document.getElementById('logCount').textContent = '5 entries (sample)';
+        });
+</script>
+<script>
+(function(){
+  const btn=document.getElementById('hamburgerBtn'),sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+  if(!btn)return;
+  function toggle(){sb.classList.toggle('open');ov.classList.toggle('open');}
+  btn.addEventListener('click',toggle);
+  ov.addEventListener('click',toggle);
+})();
+</script>
+</body>
+</html>

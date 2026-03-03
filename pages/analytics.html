@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MicroAudit — Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <style>
+    .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .full-width{grid-column:1/-1}
+
+    /* KPI row */
+    .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;grid-column:1/-1}
+    .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+    .kpi::after{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px}
+    .kpi.blue::after{background:#2563eb}.kpi.green::after{background:#16a34a}.kpi.red::after{background:#dc2626}.kpi.amber::after{background:#d97706}
+    .kpi-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+    .kpi-val{font-family:'Fraunces',serif;font-size:32px;font-weight:300;line-height:1}
+    .kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
+
+    /* Bar chart */
+    .bar-chart{display:flex;align-items:flex-end;gap:14px;height:180px;padding:16px 22px 10px}
+    .bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:6px}
+    .bar-col .bar{width:100%;border-radius:6px 6px 0 0;transition:height .8s cubic-bezier(.4,0,.2,1);min-height:4px}
+    .bar-col .bar-lbl{font-size:10px;color:var(--muted);text-align:center;font-weight:500;white-space:nowrap}
+    .bar-col .bar-val{font-size:11px;font-weight:700}
+
+    /* Horizontal bar */
+    .hbar-wrap{padding:12px 22px}
+    .hbar-item{margin-bottom:14px}
+    .hbar-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+    .hbar-name{font-weight:500;color:var(--text)}
+    .hbar-val{font-weight:700}
+    .hbar-track{height:10px;background:var(--bg);border-radius:6px;overflow:hidden}
+    .hbar-fill{height:100%;border-radius:6px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+    /* Donut chart (pure CSS) */
+    .donut-wrap{display:flex;align-items:center;gap:30px;padding:20px 22px}
+    .donut{width:150px;height:150px;border-radius:50%;position:relative;flex-shrink:0}
+    .donut-hole{position:absolute;width:80px;height:80px;background:var(--surface);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .donut-hole .dh-val{font-family:'Fraunces',serif;font-size:24px;font-weight:300;line-height:1}
+    .donut-hole .dh-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:.4px;margin-top:2px}
+    .legend{display:flex;flex-direction:column;gap:10px}
+    .legend-item{display:flex;align-items:center;gap:10px;font-size:12px}
+    .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .legend-val{font-weight:700;margin-left:auto;min-width:24px;text-align:right}
+
+    /* Sparkline area */
+    .trend-chart{padding:10px 22px 16px}
+    .trend-svg{width:100%;height:120px}
+
+    /* Score bars */
+    .score-bar-wrap{padding:12px 22px}
+    .score-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .score-name{font-size:12px;font-weight:500;width:70px;color:var(--text)}
+    .score-track{flex:1;height:24px;background:var(--bg);border-radius:6px;overflow:hidden;position:relative}
+    .score-fill{height:100%;border-radius:6px;transition:width .8s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;font-weight:700;color:#fff;min-width:36px}
+    .score-badge{display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;width:50px;justify-content:center}
+    .score-good{background:#f0fdf4;color:#16a34a}.score-warn{background:#fffbeb;color:#d97706}.score-bad{background:#fef2f2;color:#dc2626}
+
+    /* Metric cards */
+    .metric-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 22px}
+    .m-card{background:var(--bg);border-radius:10px;padding:18px;text-align:center}
+    .m-card .mc-val{font-family:'Fraunces',serif;font-size:36px;font-weight:300;line-height:1}
+    .m-card .mc-lbl{font-size:11px;color:var(--muted);font-weight:500;margin-top:6px}
+
+    /* Priority pills */
+    .pri-high{color:#dc2626;font-weight:600}.pri-med{color:#d97706;font-weight:600}.pri-low{color:#16a34a;font-weight:600}
+
+    @media(max-width:900px){.analytics-grid,.kpi-row{grid-template-columns:1fr}.donut-wrap{flex-direction:column}}
+    @media(max-width:480px){.bar-chart{height:140px;padding:10px 12px 6px;gap:8px}.donut{width:120px;height:120px}.donut-hole{width:64px;height:64px}.metric-row{grid-template-columns:1fr}}
+
+    /* ── Generate Report Button ── */
+    .analytics-actions{display:flex;gap:12px;margin-bottom:20px;align-items:center;justify-content:flex-end}
+    .gen-report-btn{padding:10px 22px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;transition:all .2s}
+    .gen-report-btn:hover{background:var(--navy2);box-shadow:var(--shadow)}
+    .print-report-btn{padding:10px 22px;background:transparent;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--text2);display:flex;align-items:center;gap:8px;transition:all .15s}
+    .print-report-btn:hover{border-color:var(--navy);color:var(--navy)}
+
+    /* ── Print Watermark ── */
+    .print-watermark{display:none}
+
+    /* ── Generated Report Panel ── */
+    .analytics-report{display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm);margin-top:24px}
+    .analytics-report.visible{display:block}
+    .ar-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .ar-header h3{font-family:'Fraunces',serif;font-size:16px;font-weight:400;color:var(--navy)}
+    .ar-body{padding:24px}
+    .ar-section{margin-bottom:28px;page-break-inside:avoid}
+    .ar-section:last-child{margin-bottom:0}
+    .ar-section h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+    .ar-table{width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border)}
+    .ar-table th{text-align:left;padding:11px 16px;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--border);background:#f1f5f9;color:var(--navy)}
+    .ar-table td{padding:11px 16px;border:1px solid var(--border);color:var(--text)}
+    .ar-table tbody tr:nth-child(even){background:#f8fafc}
+    .ar-table tbody tr:hover{background:#eff6ff}
+    .ar-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+    .ar-stat{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 18px;text-align:center}
+    .ar-stat .arv{font-family:'Fraunces',serif;font-size:28px;font-weight:300;line-height:1;margin-bottom:4px}
+    .ar-stat .arl{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+    .ar-close{padding:8px 18px;background:transparent;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--text2);margin-left:8px}
+    .ar-close:hover{border-color:var(--navy)}
+    .ar-print{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+    .ar-print:hover{background:var(--navy2)}
+    .ar-note{font-size:11px;color:var(--muted);text-align:center;padding:16px;background:var(--bg);border-radius:8px;margin-top:24px}
+
+    /* ── Print Styles ── */
+    @media print{
+      body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .sidebar,.topbar,.analytics-actions,.hamburger,.sidebar-overlay,.ar-close,.ar-print,.back-btn{display:none!important}
+      .main{margin-left:0!important;padding:0!important}
+      .content{padding:0!important}
+      .analytics-grid{display:none!important}
+      .analytics-report{border:none!important;box-shadow:none!important;display:block!important}
+      .print-watermark{display:block!important}
+      .print-watermark-top{border-bottom:2px solid #1e293b;padding:18px 0 14px;margin-bottom:20px}
+      .print-watermark-top .pw-logo{font-family:'Fraunces',serif;font-size:20px;font-weight:400;color:#1e293b}
+      .print-watermark-top .pw-logo span{color:#2563eb}
+      .print-watermark-top .pw-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#64748b;flex-wrap:wrap;gap:8px}
+      .print-watermark-top .pw-meta b{color:#1e293b}
+      .print-watermark-footer{border-top:2px solid #1e293b;padding:14px 0 0;margin-top:30px;font-size:10px;color:#64748b;display:flex!important;justify-content:space-between}
+      .ar-table{font-size:11px!important}
+      .ar-table th{background:#f1f5f9!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .ar-table td,.ar-table th{padding:8px 12px!important}
+      .ar-table tbody tr:nth-child(even){background:#f8fafc!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .ar-section{page-break-inside:avoid;margin-bottom:20px}
+      .ar-summary{grid-template-columns:repeat(4,1fr)}
+      .ar-stat{border:1px solid #ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .ar-note{display:block!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      h3,h4{page-break-after:avoid}
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-text">Micro<span>Audit</span></div>
+    <div class="logo-sub">Committee Tracker</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">⚡</span> Dashboard</a>
+    <a href="action-form.html" class="nav-item"><span class="nav-icon">＋</span> New Action</a>
+    <a href="my-actions.html" class="nav-item"><span class="nav-icon">📋</span> My Actions <span class="badge">4</span></a>
+    <a href="audit-logs.html" class="nav-item"><span class="nav-icon">🔍</span> Audit Logs</a>
+    <div class="nav-label">Reports</div>
+    <a href="analytics.html" class="nav-item active"><span class="nav-icon">📊</span> Analytics</a>
+    <a href="reports.html" class="nav-item"><span class="nav-icon">📁</span> Reports</a>
+    <div class="nav-label">Account</div>
+    <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span> Profile</a>
+    <a href="../index.html" class="nav-item" onclick="sessionStorage.clear()"><span class="nav-icon">🚪</span> Logout</a>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-card">
+      <div class="avatar" id="avatarInitial">--</div>
+      <div><div class="uname" id="sidebarName">Loading...</div><div class="urole" id="sidebarRole">--</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
+    <div class="topbar-title">Analytics Dashboard</div>
+    <div class="tb-right">
+      <div class="tb-time" id="liveClock">--:--:--</div>
+      <a href="dashboard.html" class="back-btn">← Back</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Action buttons -->
+    <div class="analytics-actions">
+      <button class="gen-report-btn" onclick="generateAnalyticsReport()">📄 Generate Report</button>
+      <button class="print-report-btn" onclick="printAnalyticsReport()">🖨️ Print Report</button>
+    </div>
+
+    <div class="analytics-grid">
+
+      <!-- KPI Row -->
+      <div class="kpi-row">
+        <div class="kpi blue"><div class="kpi-label">Total Actions</div><div class="kpi-val" id="kpiTotal">0</div><div class="kpi-sub">Across all committees</div></div>
+        <div class="kpi green"><div class="kpi-label">On Time</div><div class="kpi-val" id="kpiOnTime">0</div><div class="kpi-sub" id="kpiOnTimePct">0% completion rate</div></div>
+        <div class="kpi red"><div class="kpi-label">Delayed</div><div class="kpi-val" id="kpiDelayed">0</div><div class="kpi-sub" id="kpiDelayedPct">0% of total</div></div>
+        <div class="kpi amber"><div class="kpi-label">Avg Delay</div><div class="kpi-val" id="kpiAvgDelay">0h</div><div class="kpi-sub">Across delayed actions</div></div>
+      </div>
+
+      <!-- Status Distribution — Donut Chart -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Status Distribution</span>
+          <span style="font-size:11px;color:var(--muted)">All actions by status</span>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut" id="donutChart"></div>
+          <div class="legend" id="donutLegend"></div>
+        </div>
+      </div>
+
+      <!-- Committee Performance — Bar Chart -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Committee Performance</span>
+          <span style="font-size:11px;color:var(--muted)">Actions per committee</span>
+        </div>
+        <div class="bar-chart" id="committeeBarChart"></div>
+      </div>
+
+      <!-- Delay by Committee — Horizontal Bars -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Avg Delay by Committee</span>
+          <span style="font-size:11px;color:var(--muted)">Hours</span>
+        </div>
+        <div class="hbar-wrap" id="delayBars"></div>
+      </div>
+
+      <!-- On-Time vs Delayed — Donut + metrics -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">On-Time vs Delayed</span>
+          <span style="font-size:11px;color:var(--muted)">Action timeliness</span>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut" id="timelinessDonut"></div>
+          <div style="flex:1">
+            <div class="metric-row" style="padding:0;gap:12px">
+              <div class="m-card" style="border:2px solid #16a34a30"><div class="mc-val" style="color:var(--success)" id="onTimeVal">0</div><div class="mc-lbl">On Time</div></div>
+              <div class="m-card" style="border:2px solid #dc262630"><div class="mc-val" style="color:var(--danger)" id="delayedVal">0</div><div class="mc-lbl">Delayed</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Trend — SVG Area Chart -->
+      <div class="panel full-width">
+        <div class="ph">
+          <span class="ph-title">Monthly Action Trend</span>
+          <span style="font-size:11px;color:var(--muted)">Last 6 months</span>
+        </div>
+        <div class="trend-chart" id="trendChart"></div>
+      </div>
+
+      <!-- Actions by Priority — Bar Chart -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Actions by Priority</span>
+          <span style="font-size:11px;color:var(--muted)">High / Medium / Low</span>
+        </div>
+        <div class="bar-chart" id="priorityChart"></div>
+      </div>
+
+      <!-- Member Accountability Scores -->
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Member Accountability</span>
+          <span style="font-size:11px;color:var(--muted)">Score: 0–100</span>
+        </div>
+        <div class="score-bar-wrap" id="scoreBars"></div>
+      </div>
+
+      <!-- Top Delayed Actions -->
+      <div class="panel full-width">
+        <div class="ph">
+          <span class="ph-title">Top Delayed Actions</span>
+          <span style="font-size:11px;color:var(--muted)">Sorted by delay hours</span>
+        </div>
+        <table>
+          <thead><tr><th>ID</th><th>Title</th><th>Committee</th><th>Priority</th><th>Status</th><th>Delay</th></tr></thead>
+          <tbody id="delayTable"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ═══ Generated Analytics Report (shown on Generate Report click) ═══ -->
+    <div class="analytics-report" id="analyticsReport">
+      <!-- Print watermark header -->
+      <div class="print-watermark print-watermark-top" id="printHeader">
+        <div class="pw-logo">Micro<span>Audit</span> — Analytics Report</div>
+        <div class="pw-meta">
+          <span><b>Generated By:</b> <span id="pwName">—</span> (<span id="pwId">—</span>)</span>
+          <span><b>Role:</b> <span id="pwRole">—</span></span>
+          <span><b>Department:</b> <span id="pwDept">—</span></span>
+          <span><b>Date:</b> <span id="pwDate">—</span></span>
+        </div>
+      </div>
+
+      <div class="ar-header">
+        <h3>Analytics Report — Micro-Audit System</h3>
+        <div>
+          <button class="ar-print" onclick="window.print()">🖨️ Print</button>
+          <button class="ar-close" onclick="closeAnalyticsReport()">Close</button>
+        </div>
+      </div>
+      <div class="ar-body" id="analyticsReportBody"></div>
+
+      <!-- Print watermark footer -->
+      <div class="print-watermark print-watermark-footer">
+        <span>Micro-Audit System | Confidential — Analytics Report</span>
+        <span>Printed by: <span id="pwFootName">—</span> | <span id="pwFootDate">—</span></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/User.js"></script>
+<script src="../js/Action.js"></script>
+<script>
+/* ── Auth & sidebar ── */
+const u = User.fromSession();
+if (!u) window.location.href = '../index.html';
+const initials = u.name ? u.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase() : u.id.substring(0,2).toUpperCase();
+document.getElementById('avatarInitial').textContent = initials;
+document.getElementById('sidebarName').textContent = u.name || u.id;
+document.getElementById('sidebarRole').textContent = u.role;
+
+/* ── Clock ── */
+function tick(){document.getElementById('liveClock').textContent=new Date().toLocaleTimeString()}
+setInterval(tick,1000); tick();
+
+/* ── Sample data (realistic dates) ── */
+const actions = [
+  { id:'ACT-001', title:'Equipment Purchase Approval',   committee:'Purchase',  priority:'high',   status:'Review',   createdBy:'STF001', created:'2026-02-10', deadline:'2026-02-17' },
+  { id:'ACT-002', title:'Exam Hall Booking',              committee:'Exam',      priority:'medium', status:'Approved', createdBy:'STF002', created:'2026-02-15', deadline:'2026-03-01' },
+  { id:'ACT-003', title:'Cultural Fest Budget Sanction',  committee:'Cultural',  priority:'high',   status:'Created',  createdBy:'STF003', created:'2026-02-18', deadline:'2026-02-25' },
+  { id:'ACT-004', title:'NAAC Document Submission',       committee:'NAAC',      priority:'low',    status:'Rejected', createdBy:'STF004', created:'2026-01-20', deadline:'2026-01-30' },
+  { id:'ACT-005', title:'Hostel Maintenance Request',     committee:'Hostel',    priority:'medium', status:'Closed',   createdBy:'STF005', created:'2026-01-25', deadline:'2026-02-01' },
+  { id:'ACT-006', title:'Library Software Renewal',       committee:'Purchase',  priority:'low',    status:'Approved', createdBy:'STF001', created:'2026-02-01', deadline:'2026-02-10' },
+  { id:'ACT-007', title:'Workshop Guest Speaker',         committee:'Cultural',  priority:'medium', status:'Approved', createdBy:'STF003', created:'2026-01-10', deadline:'2026-01-20' },
+  { id:'ACT-008', title:'Semester Exam Schedule',         committee:'Exam',      priority:'high',   status:'Review',   createdBy:'STF002', created:'2026-02-20', deadline:'2026-03-05' },
+  { id:'ACT-009', title:'Hostel Fee Revision',            committee:'Hostel',    priority:'high',   status:'Created',  createdBy:'STF006', created:'2026-02-22', deadline:'2026-03-01' },
+  { id:'ACT-010', title:'NAAC Peer Review Prep',          committee:'NAAC',      priority:'medium', status:'Review',   createdBy:'STF004', created:'2026-02-25', deadline:'2026-03-10' },
+];
+
+/* Helpers */
+function getDelay(a){
+  if(a.status==='Approved'||a.status==='Closed') return 0;
+  const diff=Date.now()-new Date(a.deadline).getTime();
+  return Math.max(0,Math.round(diff/3600000));
+}
+function isDelayed(a){return getDelay(a)>0}
+
+/* ── 1. KPI Cards ── */
+const total=actions.length;
+const onTime=actions.filter(a=>!isDelayed(a));
+const delayed=actions.filter(a=>isDelayed(a));
+const avgDelay=delayed.length>0?Math.round(delayed.reduce((s,a)=>s+getDelay(a),0)/delayed.length):0;
+
+document.getElementById('kpiTotal').textContent=total;
+document.getElementById('kpiOnTime').textContent=onTime.length;
+document.getElementById('kpiOnTimePct').textContent=Math.round(onTime.length/total*100)+'% completion rate';
+document.getElementById('kpiDelayed').textContent=delayed.length;
+document.getElementById('kpiDelayedPct').textContent=Math.round(delayed.length/total*100)+'% of total';
+document.getElementById('kpiAvgDelay').textContent=avgDelay+'h';
+
+/* ── 2. Status Donut ── */
+const statusColors={Created:'#2563eb',Review:'#d97706',Approved:'#16a34a',Rejected:'#dc2626',Closed:'#78716c'};
+const statusCounts={};
+actions.forEach(a=>{statusCounts[a.status]=(statusCounts[a.status]||0)+1});
+renderDonut('donutChart','donutLegend',statusCounts,statusColors,total+' Total');
+
+/* ── 3. Committee Bar Chart ── */
+const committeeCounts={};
+actions.forEach(a=>{committeeCounts[a.committee]=(committeeCounts[a.committee]||0)+1});
+renderBarChart('committeeBarChart',committeeCounts,'#2563eb');
+
+/* ── 4. Delay Horizontal Bars ── */
+const committeeDelay={};
+actions.forEach(a=>{
+  if(!committeeDelay[a.committee]) committeeDelay[a.committee]=[];
+  committeeDelay[a.committee].push(getDelay(a));
+});
+const avgDelayByComm={};
+Object.entries(committeeDelay).forEach(([k,v])=>{avgDelayByComm[k]=Math.round(v.reduce((s,h)=>s+h,0)/v.length)});
+renderHBars('delayBars',avgDelayByComm);
+
+/* ── 5. Timeliness Donut ── */
+document.getElementById('onTimeVal').textContent=onTime.length;
+document.getElementById('delayedVal').textContent=delayed.length;
+renderDonut('timelinessDonut',null,{'On Time':onTime.length,'Delayed':delayed.length},{'On Time':'#16a34a','Delayed':'#dc2626'},Math.round(onTime.length/total*100)+'%');
+
+/* ── 6. Monthly Trend ── */
+const monthlyData=[
+  {month:'Oct',created:6,closed:5},
+  {month:'Nov',created:8,closed:6},
+  {month:'Dec',created:5,closed:7},
+  {month:'Jan',created:9,closed:6},
+  {month:'Feb',created:12,closed:8},
+  {month:'Mar',created:4,closed:2}
+];
+renderTrend('trendChart',monthlyData);
+
+/* ── 7. Priority Bar Chart ── */
+const priCounts={High:0,Medium:0,Low:0};
+actions.forEach(a=>{priCounts[a.priority.charAt(0).toUpperCase()+a.priority.slice(1)]++});
+renderBarChart('priorityChart',priCounts,null,{High:'#dc2626',Medium:'#d97706',Low:'#16a34a'});
+
+/* ── 8. Member Accountability Scores ── */
+const memberStats={};
+actions.forEach(a=>{
+  if(!memberStats[a.createdBy]) memberStats[a.createdBy]={total:0,delayed:0};
+  memberStats[a.createdBy].total++;
+  if(isDelayed(a)) memberStats[a.createdBy].delayed++;
+});
+renderScoreBars('scoreBars',memberStats);
+
+/* ── 9. Top Delayed Table ── */
+const sortedByDelay=[...actions].sort((a,b)=>getDelay(b)-getDelay(a)).filter(a=>getDelay(a)>0);
+const tbody=document.getElementById('delayTable');
+if(sortedByDelay.length===0){
+  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">No delayed actions — all on track!</td></tr>';
+} else {
+  tbody.innerHTML=sortedByDelay.map(a=>{
+    const d=getDelay(a);
+    const priClass={high:'pri-high',medium:'pri-med',low:'pri-low'}[a.priority];
+    const sc={Created:'s-created',Review:'s-review',Approved:'s-approved',Rejected:'s-rejected',Closed:'s-closed'}[a.status]||'';
+    return `<tr>
+      <td style="color:var(--accent);font-weight:600">${a.id}</td>
+      <td>${a.title}</td>
+      <td style="color:var(--muted)">${a.committee}</td>
+      <td class="${priClass}" style="text-transform:capitalize">${a.priority}</td>
+      <td><span class="status-badge ${sc}">${a.status}</span></td>
+      <td style="color:var(--danger);font-weight:700">${d}h</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   CHART RENDERERS (pure CSS + SVG, no libraries)
+   ══════════════════════════════════════════════════════ */
+
+function renderDonut(containerId,legendId,data,colors,centerText){
+  const entries=Object.entries(data);
+  const total=entries.reduce((s,[,v])=>s+v,0);
+  let cumPct=0;
+  const gradStops=[];
+  entries.forEach(([key,val])=>{
+    const pct=total>0?(val/total)*100:0;
+    gradStops.push(`${colors[key]} ${cumPct}% ${cumPct+pct}%`);
+    cumPct+=pct;
+  });
+  const el=document.getElementById(containerId);
+  el.style.background=`conic-gradient(${gradStops.join(',')})`;
+  el.innerHTML=`<div class="donut-hole"><div class="dh-val">${centerText.split(' ')[0]}</div><div class="dh-lbl">${centerText.split(' ').slice(1).join(' ')||''}</div></div>`;
+
+  if(legendId){
+    document.getElementById(legendId).innerHTML=entries.map(([key,val])=>
+      `<div class="legend-item"><div class="legend-dot" style="background:${colors[key]}"></div><span>${key}</span><span class="legend-val">${val}</span></div>`
+    ).join('');
+  }
+}
+
+function renderBarChart(containerId,data,defaultColor,colorMap){
+  const entries=Object.entries(data);
+  const max=Math.max(...entries.map(([,v])=>v),1);
+  document.getElementById(containerId).innerHTML=entries.map(([label,val])=>{
+    const pct=Math.round((val/max)*100);
+    const col=colorMap?colorMap[label]:defaultColor;
+    return `<div class="bar-col">
+      <div class="bar-val" style="color:${col}">${val}</div>
+      <div class="bar" style="height:0%;background:${col}" data-h="${pct}%"></div>
+      <div class="bar-lbl">${label}</div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{document.getElementById(containerId).querySelectorAll('.bar').forEach(b=>b.style.height=b.dataset.h)},100);
+}
+
+function renderHBars(containerId,data){
+  const max=Math.max(...Object.values(data),1);
+  document.getElementById(containerId).innerHTML=Object.entries(data).map(([name,val])=>{
+    const pct=Math.round((val/max)*100);
+    const col=val<12?'#16a34a':val<48?'#d97706':'#dc2626';
+    return `<div class="hbar-item">
+      <div class="hbar-head"><span class="hbar-name">${name}</span><span class="hbar-val" style="color:${col}">${val}h</span></div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:0%;background:${col}" data-w="${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{document.getElementById(containerId).querySelectorAll('.hbar-fill').forEach(b=>b.style.width=b.dataset.w)},100);
+}
+
+function renderTrend(containerId,data){
+  const w=800,h=120,pad=30;
+  const maxVal=Math.max(...data.map(d=>Math.max(d.created,d.closed)),1);
+  const stepX=(w-pad*2)/(data.length-1);
+
+  function pts(key){return data.map((d,i)=>`${pad+i*stepX},${h-pad-((d[key]/maxVal)*(h-pad*2))}`).join(' ')}
+  function area(key){
+    const p=data.map((d,i)=>`${pad+i*stepX},${h-pad-((d[key]/maxVal)*(h-pad*2))}`);
+    return `${pad},${h-pad} ${p.join(' ')} ${pad+(data.length-1)*stepX},${h-pad}`;
+  }
+
+  const labels=data.map((d,i)=>`<text x="${pad+i*stepX}" y="${h-6}" text-anchor="middle" fill="var(--muted)" font-size="10" font-weight="500">${d.month}</text>`).join('');
+  const dots1=data.map((d,i)=>`<circle cx="${pad+i*stepX}" cy="${h-pad-((d.created/maxVal)*(h-pad*2))}" r="4" fill="#2563eb"/>`).join('');
+  const dots2=data.map((d,i)=>`<circle cx="${pad+i*stepX}" cy="${h-pad-((d.closed/maxVal)*(h-pad*2))}" r="4" fill="#16a34a"/>`).join('');
+
+  document.getElementById(containerId).innerHTML=`
+    <div style="display:flex;gap:16px;margin-bottom:8px;padding:0 22px">
+      <span style="font-size:11px;font-weight:600;color:#2563eb">● Created</span>
+      <span style="font-size:11px;font-weight:600;color:#16a34a">● Closed</span>
+    </div>
+    <svg class="trend-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+      <polygon points="${area('created')}" fill="rgba(37,99,235,.08)"/>
+      <polyline points="${pts('created')}" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>
+      <polygon points="${area('closed')}" fill="rgba(22,163,74,.08)"/>
+      <polyline points="${pts('closed')}" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="6,4"/>
+      ${dots1}${dots2}${labels}
+    </svg>`;
+}
+
+function renderScoreBars(containerId,stats){
+  document.getElementById(containerId).innerHTML=Object.entries(stats).map(([id,s])=>{
+    const score=s.total>0?Math.round(((s.total-s.delayed)/s.total)*100):100;
+    const col=score>=80?'#16a34a':score>=50?'#d97706':'#dc2626';
+    const lbl=score>=80?'Good':score>=50?'Fair':'Poor';
+    const badgeCls=score>=80?'score-good':score>=50?'score-warn':'score-bad';
+    return `<div class="score-row">
+      <span class="score-name">${id}</span>
+      <div class="score-track"><div class="score-fill" style="width:0%;background:${col}" data-w="${score}%">${score}</div></div>
+      <span class="score-badge ${badgeCls}">${lbl}</span>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{document.getElementById(containerId).querySelectorAll('.score-fill').forEach(b=>b.style.width=b.dataset.w)},150);
+}
+
+/* ══════════════════════════════════════════════════════
+   GENERATE ANALYTICS REPORT — Proper print-ready tables
+   ══════════════════════════════════════════════════════ */
+function generateAnalyticsReport(){
+  const report = document.getElementById('analyticsReport');
+  const body   = document.getElementById('analyticsReportBody');
+  const ts     = new Date().toLocaleString();
+
+  // Populate watermark
+  document.getElementById('pwName').textContent = u.name || u.id;
+  document.getElementById('pwId').textContent   = u.id;
+  document.getElementById('pwRole').textContent = u.role || 'Member';
+  document.getElementById('pwDept').textContent = u.department || 'N/A';
+  document.getElementById('pwDate').textContent = ts;
+  document.getElementById('pwFootName').textContent = (u.name||u.id) + ' — ' + u.id;
+  document.getElementById('pwFootDate').textContent = ts;
+
+  // ── Summary KPIs ──
+  const summaryHTML = `
+    <div class="ar-summary">
+      <div class="ar-stat"><div class="arv" style="color:var(--navy)">${total}</div><div class="arl">Total Actions</div></div>
+      <div class="ar-stat"><div class="arv" style="color:#16a34a">${onTime.length}</div><div class="arl">On Time</div></div>
+      <div class="ar-stat"><div class="arv" style="color:#dc2626">${delayed.length}</div><div class="arl">Delayed</div></div>
+      <div class="ar-stat"><div class="arv" style="color:#d97706">${avgDelay}h</div><div class="arl">Avg Delay</div></div>
+    </div>`;
+
+  // ── 1. All Actions Table ──
+  const allActionsHTML = actions.map(a => {
+    const d = getDelay(a);
+    const priColor = {high:'#dc2626',medium:'#d97706',low:'#16a34a'}[a.priority];
+    const statusColor = {Created:'#2563eb',Review:'#d97706',Approved:'#16a34a',Rejected:'#dc2626',Closed:'#78716c'}[a.status];
+    return `<tr>
+      <td style="font-weight:700;color:#2563eb">${a.id}</td>
+      <td>${a.title}</td>
+      <td>${a.committee}</td>
+      <td style="text-transform:capitalize;color:${priColor};font-weight:600">${a.priority}</td>
+      <td style="color:${statusColor};font-weight:600">${a.status}</td>
+      <td>${a.created}</td>
+      <td>${a.deadline}</td>
+      <td style="color:${d>0?'#dc2626':'#16a34a'};font-weight:700">${d===0?'On time':d+'h'}</td>
+    </tr>`;
+  }).join('');
+
+  // ── 2. Status Distribution Table ──
+  const statuses = ['Created','Review','Approved','Rejected','Closed'];
+  const sColors = {Created:'#2563eb',Review:'#d97706',Approved:'#16a34a',Rejected:'#dc2626',Closed:'#78716c'};
+  const statusRows = statuses.map(s => {
+    const cnt = actions.filter(a=>a.status===s).length;
+    const pct = total>0 ? Math.round((cnt/total)*100) : 0;
+    return `<tr><td style="color:${sColors[s]};font-weight:600">${s}</td><td>${cnt}</td><td>${pct}%</td><td><div style="background:#e5e7eb;border-radius:4px;height:12px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${sColors[s]};border-radius:4px"></div></div></td></tr>`;
+  }).join('');
+
+  // ── 3. Committee Performance Table ──
+  const commGroups = {};
+  actions.forEach(a => {
+    if(!commGroups[a.committee]) commGroups[a.committee] = [];
+    commGroups[a.committee].push(a);
+  });
+  const commRows = Object.entries(commGroups).map(([name, acts]) => {
+    const t = acts.length;
+    const del = acts.filter(a=>getDelay(a)>0).length;
+    const avg = t>0 ? Math.round(acts.reduce((s,a)=>s+getDelay(a),0)/t) : 0;
+    const ot = t - del;
+    const eff = t>0 ? Math.round((ot/t)*100) : 100;
+    const effColor = eff >= 80 ? '#16a34a' : eff >= 50 ? '#d97706' : '#dc2626';
+    return `<tr><td style="font-weight:600">${name}</td><td>${t}</td><td>${ot}</td><td style="color:#dc2626">${del}</td><td>${avg}h</td><td style="color:${effColor};font-weight:700">${eff}%</td></tr>`;
+  }).join('');
+
+  // ── 4. Delay by Committee Table ──
+  const delayCommRows = Object.entries(avgDelayByComm).sort((a,b)=>b[1]-a[1]).map(([name,hrs]) => {
+    const col = hrs<12?'#16a34a':hrs<48?'#d97706':'#dc2626';
+    const risk = hrs<12?'Low':hrs<48?'Medium':'High';
+    return `<tr><td style="font-weight:600">${name}</td><td>${hrs}h</td><td style="color:${col};font-weight:600">${risk}</td><td><div style="background:#e5e7eb;border-radius:4px;height:12px;overflow:hidden"><div style="height:100%;width:${Math.min(100,Math.round((hrs/Math.max(...Object.values(avgDelayByComm),1))*100))}%;background:${col};border-radius:4px"></div></div></td></tr>`;
+  }).join('');
+
+  // ── 5. Priority Analysis Table ──
+  const priorities = ['high','medium','low'];
+  const priRows = priorities.map(p => {
+    const acts = actions.filter(a=>a.priority===p);
+    const del = acts.filter(a=>getDelay(a)>0).length;
+    const avg = acts.length>0 ? Math.round(acts.reduce((s,a)=>s+getDelay(a),0)/acts.length) : 0;
+    const priColor = {high:'#dc2626',medium:'#d97706',low:'#16a34a'}[p];
+    return `<tr><td style="text-transform:capitalize;color:${priColor};font-weight:700">${p}</td><td>${acts.length}</td><td>${del}</td><td style="color:${del>0?'#dc2626':'#16a34a'};font-weight:600">${avg}h</td></tr>`;
+  }).join('');
+
+  // ── 6. Member Accountability Table ──
+  const memberRows = Object.entries(memberStats).map(([id,s]) => {
+    const score = s.total>0 ? Math.round(((s.total-s.delayed)/s.total)*100) : 100;
+    const col = score>=80?'#16a34a':score>=50?'#d97706':'#dc2626';
+    const rating = score>=80?'Good':score>=50?'Fair':'Poor';
+    return `<tr><td style="font-weight:600">${id}</td><td>${s.total}</td><td>${s.total-s.delayed}</td><td style="color:#dc2626">${s.delayed}</td><td style="color:${col};font-weight:700">${score}/100</td><td style="color:${col};font-weight:600">${rating}</td></tr>`;
+  }).join('');
+
+  // ── 7. Monthly Trend Table ──
+  const trendRows = monthlyData.map(m => {
+    const net = m.created - m.closed;
+    const netColor = net > 0 ? '#dc2626' : net < 0 ? '#16a34a' : '#78716c';
+    return `<tr><td style="font-weight:600">${m.month}</td><td>${m.created}</td><td>${m.closed}</td><td style="color:${netColor};font-weight:700">${net > 0 ? '+' : ''}${net}</td></tr>`;
+  }).join('');
+
+  // ── 8. Top Delayed Actions Table ──
+  const delayedActions = [...actions].filter(a=>getDelay(a)>0).sort((a,b)=>getDelay(b)-getDelay(a));
+  const delayedRows = delayedActions.length === 0
+    ? '<tr><td colspan="7" style="text-align:center;color:#78716c;padding:20px">No delayed actions — all on track!</td></tr>'
+    : delayedActions.map(a => {
+        const d = getDelay(a);
+        const priColor = {high:'#dc2626',medium:'#d97706',low:'#16a34a'}[a.priority];
+        return `<tr>
+          <td style="font-weight:700;color:#2563eb">${a.id}</td>
+          <td>${a.title}</td>
+          <td>${a.committee}</td>
+          <td style="text-transform:capitalize;color:${priColor};font-weight:600">${a.priority}</td>
+          <td>${a.status}</td>
+          <td>${a.deadline}</td>
+          <td style="color:#dc2626;font-weight:700">${d}h</td>
+        </tr>`;
+      }).join('');
+
+  body.innerHTML = `
+    <div style="font-size:11px;color:var(--muted);margin-bottom:20px">Generated: ${ts} | By: ${u.name || u.id} (${u.role})</div>
+
+    ${summaryHTML}
+
+    <div class="ar-section">
+      <h4>1. All Actions Overview</h4>
+      <table class="ar-table">
+        <thead><tr><th>ID</th><th>Title</th><th>Committee</th><th>Priority</th><th>Status</th><th>Created</th><th>Deadline</th><th>Delay</th></tr></thead>
+        <tbody>${allActionsHTML}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>2. Status Distribution</h4>
+      <table class="ar-table">
+        <thead><tr><th>Status</th><th>Count</th><th>Percentage</th><th>Distribution</th></tr></thead>
+        <tbody>${statusRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>3. Committee Performance</h4>
+      <table class="ar-table">
+        <thead><tr><th>Committee</th><th>Total</th><th>On Time</th><th>Delayed</th><th>Avg Delay</th><th>Efficiency</th></tr></thead>
+        <tbody>${commRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>4. Delay Analysis by Committee</h4>
+      <table class="ar-table">
+        <thead><tr><th>Committee</th><th>Avg Delay</th><th>Risk Level</th><th>Severity</th></tr></thead>
+        <tbody>${delayCommRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>5. Priority Analysis</h4>
+      <table class="ar-table">
+        <thead><tr><th>Priority</th><th>Actions</th><th>Delayed</th><th>Avg Delay</th></tr></thead>
+        <tbody>${priRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>6. Member Accountability Scores</h4>
+      <table class="ar-table">
+        <thead><tr><th>Staff ID</th><th>Total Actions</th><th>On Time</th><th>Delayed</th><th>Score</th><th>Rating</th></tr></thead>
+        <tbody>${memberRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>7. Monthly Action Trend</h4>
+      <table class="ar-table">
+        <thead><tr><th>Month</th><th>Created</th><th>Closed</th><th>Net Change</th></tr></thead>
+        <tbody>${trendRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-section">
+      <h4>8. Top Delayed Actions</h4>
+      <table class="ar-table">
+        <thead><tr><th>ID</th><th>Title</th><th>Committee</th><th>Priority</th><th>Status</th><th>Deadline</th><th>Delay</th></tr></thead>
+        <tbody>${delayedRows}</tbody>
+      </table>
+    </div>
+
+    <div class="ar-note">
+      Micro-Audit System — Comprehensive Analytics Report generated on ${ts} — Confidential
+    </div>`;
+
+  report.classList.add('visible');
+  report.scrollIntoView({ behavior:'smooth' });
+}
+
+function printAnalyticsReport(){
+  // If report not yet generated, generate it first
+  if(!document.getElementById('analyticsReport').classList.contains('visible')){
+    generateAnalyticsReport();
+  }
+  setTimeout(()=>window.print(), 300);
+}
+
+function closeAnalyticsReport(){
+  document.getElementById('analyticsReport').classList.remove('visible');
+}
+</script>
+<script>
+(function(){
+  const btn=document.getElementById('hamburgerBtn'),sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+  if(!btn)return;
+  function toggle(){sb.classList.toggle('open');ov.classList.toggle('open');}
+  btn.addEventListener('click',toggle);
+  ov.addEventListener('click',toggle);
+})();
+</script>
+</body>
