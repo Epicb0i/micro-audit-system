@@ -1,0 +1,1146 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Micro-Audit System ΓÇö Detailed Project Explanation</title>
+<style>
+  @media print {
+    body { font-size: 11pt; }
+    .page-break { page-break-before: always; }
+    h1 { font-size: 20pt; }
+    h2 { font-size: 16pt; }
+    h3 { font-size: 13pt; }
+    pre, code { font-size: 9pt; }
+    table { font-size: 10pt; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: #1a1a2e;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    background: #fff;
+  }
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #0f172a;
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+  h2 {
+    font-size: 22px;
+    color: #1e3a5f;
+    margin-top: 36px;
+    margin-bottom: 12px;
+    padding: 8px 14px;
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    border-radius: 0 6px 6px 0;
+  }
+  h3 {
+    font-size: 17px;
+    color: #1e40af;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+  h4 {
+    font-size: 15px;
+    color: #334155;
+    margin-top: 18px;
+    margin-bottom: 6px;
+  }
+  p { margin-bottom: 10px; }
+  ul, ol { margin-left: 24px; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px 0;
+    font-size: 13px;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    text-align: left;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    color: #1e293b;
+  }
+  tr:nth-child(even) { background: #f8fafc; }
+  pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 16px 18px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 12px;
+    margin: 10px 0 16px 0;
+    line-height: 1.6;
+  }
+  code {
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #be185d;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+  }
+  .person-header {
+    text-align: center;
+    font-size: 24px;
+    color: #fff;
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin-top: 40px;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .person1 { background: linear-gradient(135deg, #2563eb, #7c3aed); }
+  .person2 { background: linear-gradient(135deg, #059669, #0d9488); }
+  .person3 { background: linear-gradient(135deg, #dc2626, #ea580c); }
+  .covers-box {
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: #92400e;
+  }
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0 16px 0;
+  }
+  .tech-tag {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .highlight-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+  }
+  .warning-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    color: #991b1b;
+  }
+  hr {
+    border: none;
+    border-top: 2px dashed #cbd5e1;
+    margin: 30px 0;
+  }
+  .arch-box {
+    background: #1e293b;
+    color: #93c5fd;
+    padding: 18px 24px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 14px;
+    text-align: center;
+    margin: 14px 0;
+    letter-spacing: 1px;
+  }
+  .toc { margin: 20px 0 30px 0; }
+  .toc a { color: #2563eb; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .toc ul { list-style: none; margin-left: 0; }
+  .toc li { padding: 4px 0; border-bottom: 1px dotted #e2e8f0; }
+  .toc li::before { content: "Γû║ "; color: #2563eb; font-size: 11px; }
+  .footer {
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 2px solid #e2e8f0;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<h1>MICRO-AUDIT SYSTEM</h1>
+<p class="subtitle">Detailed Project Explanation ΓÇö Divided for 3 Persons</p>
+
+<h2>Project Overview</h2>
+
+<p>The <strong>Micro-Audit System</strong> is a full-stack Java web application designed to bring <strong>process accountability and transparency</strong> to college committees. It tracks committee actions (approval requests, purchase sanctions, event budgets, etc.), records every operation in an immutable audit trail, detects delay patterns using analytics, and provides role-based dashboards for three roles: <strong>Member</strong>, <strong>Committee Head</strong>, and <strong>System Auditor</strong>.</p>
+
+<h3>Technology Stack</h3>
+<div class="tech-stack">
+  <span class="tech-tag">HTML5</span>
+  <span class="tech-tag">CSS3</span>
+  <span class="tech-tag">JavaScript ES6</span>
+  <span class="tech-tag">Java 17</span>
+  <span class="tech-tag">Jakarta Servlets</span>
+  <span class="tech-tag">JSP + JSTL</span>
+  <span class="tech-tag">Hibernate ORM 6</span>
+  <span class="tech-tag">Spring MVC 6</span>
+  <span class="tech-tag">MySQL 8</span>
+  <span class="tech-tag">Maven</span>
+  <span class="tech-tag">Apache Tomcat 10</span>
+</div>
+
+<h3>Table of Contents</h3>
+<div class="toc">
+<ul>
+  <li><a href="#person1">Person 1 ΓÇö Frontend (HTML + CSS + JavaScript)</a></li>
+  <li><a href="#person2">Person 2 ΓÇö Backend Part A (Servlets, JDBC, JSP, Cookies, Filters)</a></li>
+  <li><a href="#person3">Person 3 ΓÇö Backend Part B (Hibernate ORM, Spring Core/MVC, Java Streams)</a></li>
+  <li><a href="#summary">Summary: Experiment-to-Code Mapping</a></li>
+</ul>
+</div>
+
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+<!--                       PERSON 1                                 -->
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+
+<div class="page-break"></div>
+
+<div class="person-header person1" id="person1">PERSON 1 ΓÇö Frontend (HTML + CSS + JavaScript)</div>
+
+<div class="covers-box">
+  <strong>Covers Experiments:</strong> 1 (Profile Page), 2 (JS Classes + JSON), and Content Beyond Syllabus #1 (Performance Optimization)
+</div>
+
+<h2>What the Frontend Contains</h2>
+
+<p>The frontend consists of <strong>7 HTML pages</strong>, <strong>5 CSS stylesheets</strong>, and <strong>7 JavaScript files</strong> inside <code>src/main/webapp/</code>.</p>
+
+<h3>Pages Built</h3>
+
+<table>
+  <thead><tr><th>Page</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>index.html</td><td>Login page with Staff ID, password, and role selector</td></tr>
+    <tr><td>signup.html</td><td>Registration with password strength meter</td></tr>
+    <tr><td>pages/dashboard.html</td><td>KPI cards, recent actions table, activity feed, notifications</td></tr>
+    <tr><td>pages/action-form.html</td><td>Create new action (form with priority, committee, approver)</td></tr>
+    <tr><td>pages/my-actions.html</td><td>Filter/view user's own actions + detail modal</td></tr>
+    <tr><td>pages/profile.html</td><td>Full profile page with role-based panels</td></tr>
+    <tr><td>pages/analytics.html</td><td>Charts, donut/bar/area visualizations, report generation</td></tr>
+    <tr><td>pages/audit-logs.html</td><td>Audit log table fetched from servlet</td></tr>
+    <tr><td>pages/reports.html</td><td>6 types of printable reports with watermarks</td></tr>
+  </tbody>
+</table>
+
+<h2>Experiment 1 ΓÇö profile.html (Design a Webpage)</h2>
+
+<h3>1. Header Section with Title "My Profile" and Navigation Bar (3+ links)</h3>
+
+<ul>
+  <li>The <strong>topbar</strong> at the top displays the title <code>"My Profile"</code> and a "Save Changes" button.</li>
+  <li>The <strong>sidebar navigation</strong> has 8+ links: Dashboard, New Action, My Actions, Audit Logs, Analytics, Reports, Profile (active), and Logout.</li>
+  <li>The sidebar is in <code>pages/profile.html</code> using <code>&lt;aside class="sidebar"&gt;</code> with <code>&lt;nav class="nav"&gt;</code> containing <code>&lt;a class="nav-item"&gt;</code> links.</li>
+</ul>
+
+<h3>2. Profile Section (Image, Name, Bio, Contact)</h3>
+
+<ul>
+  <li>A <strong>big-avatar</strong> div shows user initials (acts as profile image placeholder), with "Click to change photo" text below.</li>
+  <li><strong>Name</strong> is displayed as <code>.profile-name</code>, <strong>Role</strong> as a <code>.profile-role</code> badge (e.g., "Committee Member"), <strong>Staff ID</strong> as <code>.profile-id</code>.</li>
+  <li><strong>Contact details</strong> (email, phone) are in the editable form inside the "Personal Info" tab using <code>&lt;input type="email"&gt;</code> and <code>&lt;input type="tel"&gt;</code>.</li>
+  <li>Additional info: Department, Committee, Role, Joined Date ΓÇö all rendered dynamically per user session.</li>
+</ul>
+
+<h3>3. Skills Section Using CSS Flexbox/Grid (4+ Cards)</h3>
+
+<ul>
+  <li>The <strong>Permissions section</strong> acts as the "skills section" ΓÇö it displays permission tags using <code>flex-wrap</code> layout:</li>
+</ul>
+
+<pre><code>.perm-list { display:flex; flex-wrap:wrap; gap:8px; }</code></pre>
+
+<ul>
+  <li>For a <strong>Member</strong>, 4 permission tags: "Create Actions", "View Own Actions", "Edit Profile", "View Dashboard".</li>
+  <li>For a <strong>Head</strong>, 6 permissions. For an <strong>Auditor</strong>, 7 permissions.</li>
+  <li>The <strong>stat-row</strong> uses CSS Grid: <code>grid-template-columns:repeat(3,1fr)</code> for 3 stat cards.</li>
+  <li>The <strong>heatmap</strong> uses CSS Grid: <code>grid-template-columns:repeat(12,1fr)</code> for 48 activity cells.</li>
+  <li>The <strong>role panel</strong> (tab 2) displays submission tables (Member), approval cards with Approve/Reject buttons (Head), or audit statistics (Auditor) ΓÇö all using grid/flex layouts.</li>
+</ul>
+
+<h3>4. Footer with Copyright</h3>
+
+<ul>
+  <li>The <strong>sidebar footer</strong> (<code>&lt;div class="sidebar-foot"&gt;</code>) shows the logged-in user's avatar, name, and role ΓÇö this acts as the persistent footer information.</li>
+</ul>
+
+<h3>5. CSS3 Styling Used</h3>
+
+<table>
+  <thead><tr><th>Requirement</th><th>Where in Code</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Background color/gradient</strong></td>
+      <td><code>.score-circle</code> uses <code>conic-gradient()</code> for the circular score meter. Role-specific colors: blue (#2563eb) for Member, purple (#7c3aed) for Head, green (#059669) for Auditor. Root variables define <code>--bg</code>, <code>--surface</code>, <code>--navy</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Hover effects</strong></td>
+      <td><code>.big-avatar:hover { transform:scale(1.04); box-shadow:0 8px 24px rgba(...) }</code>, <code>.btn-approve:hover</code>, <code>.btn-reject:hover</code>, <code>.tab:hover</code>, <code>.si-action:hover</code>, <code>.hm-cell:hover { transform:scale(1.3) }</code>, <code>.kpi:hover</code>, <code>.nav-item:hover</code></td>
+    </tr>
+    <tr>
+      <td><strong>Padding, margins, box-shadow</strong></td>
+      <td>Every card uses <code>padding:20px 24px</code>, <code>border-radius:12px</code>, <code>box-shadow:var(--shadow-sm)</code>. Forms use <code>gap:18px</code>. Profile hero has <code>padding:28px 24px</code>.</td>
+    </tr>
+    <tr>
+      <td><strong>Media query for mobile</strong></td>
+      <td>Two breakpoints in <code>css/profile.css</code>: <code>@media(max-width:900px) { .content{flex-direction:column} .left-col{width:100%} }</code> and <code>@media(max-width:480px) { ... stat-row stacks to 1 column }</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Experiment 2 ΓÇö JavaScript Classes + JSON</h2>
+
+<h3>JavaScript Classes Created</h3>
+
+<h4>1. <code>User</code> class (js/User.js)</h4>
+
+<ul>
+  <li><strong>Properties:</strong> <code>id</code>, <code>role</code>, <code>name</code>, <code>department</code>, <code>email</code>, <code>phone</code>, <code>committee</code>, <code>loginTime</code>, <code>sessionId</code></li>
+  <li><strong>Methods:</strong>
+    <ul>
+      <li><code>toJSON()</code> ΓÇö converts user object to JSON string using <code>JSON.stringify()</code></li>
+      <li><code>static fromSession()</code> ΓÇö reconstructs User from <code>sessionStorage</code> (deserializes JSON)</li>
+    </ul>
+  </li>
+  <li><strong>Concept:</strong> ES6 classes, constructors, static methods, <code>sessionStorage</code> API, JSON serialization/deserialization.</li>
+</ul>
+
+<pre><code>class User {
+  constructor(id, role) {
+    this.id = id;
+    this.role = role;
+    this.name = id;
+    this.department = '';
+    this.email = '';
+    this.phone = '';
+    this.committee = '';
+    this.loginTime = new Date().toISOString();
+    this.sessionId = 'SES_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+  }
+
+  toJSON() {
+    return JSON.stringify({
+      id: this.id, role: this.role, name: this.name,
+      department: this.department, email: this.email, phone: this.phone,
+      committee: this.committee, loginTime: this.loginTime, sessionId: this.sessionId
+    });
+  }
+
+  static fromSession() {
+    const raw = sessionStorage.getItem('currentUser');
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    const u = new User(data.id, data.role);
+    u.name = data.name || data.id;
+    u.department = data.department || '';
+    u.email = data.email || '';
+    u.phone = data.phone || '';
+    u.committee = data.committee || '';
+    u.loginTime = data.loginTime;
+    u.sessionId = data.sessionId;
+    return u;
+  }
+}</code></pre>
+
+<h4>2. <code>Action</code> class (js/Action.js)</h4>
+
+<ul>
+  <li><strong>Properties:</strong> <code>id</code>, <code>title</code>, <code>committee</code>, <code>status</code>, <code>createdAt</code>, <code>expectedClose</code></li>
+  <li><strong>Methods:</strong>
+    <ul>
+      <li><code>getDelayHours()</code> ΓÇö computes hours between now and expected close date (arithmetic on Date objects)</li>
+      <li><code>isDelayed()</code> ΓÇö returns boolean</li>
+      <li><code>toJSON()</code> ΓÇö serializes to JSON including computed <code>delayHours</code></li>
+    </ul>
+  </li>
+  <li><strong>Concept:</strong> Date arithmetic, <code>Math.max()</code>, <code>Math.floor()</code>, JSON conversion, method chaining.</li>
+</ul>
+
+<pre><code>class Action {
+  constructor(id, title, committee, status, createdAt, expectedClose) {
+    this.id = id;
+    this.title = title;
+    this.committee = committee;
+    this.status = status;
+    this.createdAt = new Date(createdAt);
+    this.expectedClose = new Date(expectedClose);
+  }
+
+  getDelayHours() {
+    if (this.status === 'Approved' || this.status === 'Closed') return 0;
+    const now = new Date();
+    const diff = now - this.expectedClose;
+    return Math.max(0, Math.floor(diff / 3600000));
+  }
+
+  isDelayed() { return this.getDelayHours() > 0; }
+
+  toJSON() {
+    return JSON.stringify({
+      id: this.id, title: this.title, committee: this.committee,
+      status: this.status, createdAt: this.createdAt,
+      expectedClose: this.expectedClose, delayHours: this.getDelayHours()
+    });
+  }
+}</code></pre>
+
+<h4>3. <code>ActionRequest</code> class (js/ActionRequest.js)</h4>
+
+<ul>
+  <li><strong>Properties:</strong> <code>id</code> (auto-generated with <code>Date.now()</code>), <code>title</code>, <code>type</code>, <code>committee</code>, <code>dueDate</code>, <code>description</code>, <code>priority</code>, <code>cost</code>, <code>approver</code>, <code>status</code>, <code>createdAt</code></li>
+  <li><strong>Methods:</strong>
+    <ul>
+      <li><code>toJSON()</code> ΓÇö JSON serialization</li>
+      <li><code>async submitToServlet()</code> ΓÇö sends <code>FormData</code> to backend via <code>fetch()</code> POST</li>
+    </ul>
+  </li>
+  <li><strong>Concept:</strong> async/await, Fetch API, FormData, REST communication.</li>
+</ul>
+
+<pre><code>class ActionRequest {
+  constructor(title, type, committee, dueDate, description, priority, cost, approver) {
+    this.id          = 'ACT-' + Date.now();
+    this.title       = title;
+    this.type        = type;
+    this.committee   = committee;
+    this.dueDate     = dueDate;
+    this.description = description;
+    this.priority    = priority;
+    this.cost        = cost;
+    this.approver    = approver;
+    this.status      = 'Created';
+    this.createdAt   = new Date().toISOString();
+  }
+
+  toJSON() { return JSON.stringify(this); }
+
+  async submitToServlet() {
+    const formData = new FormData();
+    Object.entries(this).forEach(([key, val]) => formData.append(key, val));
+    const response = await fetch('../ActionServlet', { method: 'POST', body: formData });
+    return response;
+  }
+}</code></pre>
+
+<h3>JSON Array + Display (matching Experiment 2 requirements)</h3>
+
+<ul>
+  <li>In <code>js/dashboard.js</code>, an <strong>array of action objects</strong> is created and rendered into an HTML table.</li>
+  <li>The <code>renderActions()</code> function iterates the array and generates <code>&lt;tr&gt;</code> rows with status badges, delay calculation, and action codes.</li>
+  <li>Actions are <strong>converted to JSON</strong> when communicating with servlets (via <code>Gson</code> on backend, <code>JSON.stringify/parse</code> on frontend).</li>
+  <li>The <code>getPassedStudents()</code> equivalent is the <strong>filtering logic</strong> in <code>pages/my-actions.html</code> where actions are filtered by status ("Approved", "Created", etc.) and displayed dynamically.</li>
+</ul>
+
+<h3>Session Management on Frontend</h3>
+
+<ul>
+  <li><code>login.js</code> stores the authenticated user in <code>sessionStorage</code> via <code>sessionStorage.setItem('currentUser', user.toJSON())</code>.</li>
+  <li>Every page has an <strong>auth guard</strong>: <code>const user = User.fromSession(); if (!user) window.location.href = '../index.html';</code></li>
+  <li>Logout clears session: <code>onclick="sessionStorage.clear()"</code>.</li>
+</ul>
+
+<h2>Content Beyond Syllabus #1 ΓÇö Performance Optimization</h2>
+
+<p>The profile page and all pages implement:</p>
+<ul>
+  <li><strong>Lazy loading concept:</strong> Google Fonts loaded with <code>display=swap</code> to prevent render-blocking.</li>
+  <li><strong>CSS minification-ready:</strong> All stylesheets use shorthand properties, CSS custom properties for theming.</li>
+  <li><strong>Efficient DOM:</strong> Heatmap cells are generated dynamically (48 cells via JS loop) instead of hardcoded HTML.</li>
+  <li><strong>Event delegation:</strong> Sidebar toggle uses a single event listener pattern.</li>
+  <li><strong>Session caching:</strong> User data is cached in <code>sessionStorage</code> to avoid re-fetching from server.</li>
+</ul>
+
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+<!--                       PERSON 2                                 -->
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+
+<div class="page-break"></div>
+
+<div class="person-header person2" id="person2">PERSON 2 ΓÇö Backend Part A (Servlets, JDBC, JSP, Cookies, Filters)</div>
+
+<div class="covers-box">
+  <strong>Covers Experiments:</strong> 3 (Functional Interface/Lambda), 4 (JDBC CRUD), 5 (PreparedStatement + Stored Procedure), 6 (Greeting Servlet), 7 (Add/Subtract Servlet), 8 (Employee Details Servlet), 9 (Cookies), 10 (JSP Greeting)
+</div>
+
+<h2>Project Architecture ΓÇö Backend Overview</h2>
+
+<p>The backend follows a <strong>3-tier architecture</strong>:</p>
+
+<div class="arch-box">[Browser/JS] ΓåÆ [Servlets (Controller)] ΓåÆ [DAO (Data Access)] ΓåÆ [MySQL Database]</div>
+
+<p><strong>5 Servlets</strong> are registered in <code>WEB-INF/web.xml</code>:</p>
+<ul>
+  <li><code>LoginServlet</code> ΓÇö authentication</li>
+  <li><code>ActionServlet</code> ΓÇö CRUD on actions</li>
+  <li><code>DashboardServlet</code> ΓÇö KPI data</li>
+  <li><code>ProfileServlet</code> ΓÇö profile fetch/update</li>
+  <li><code>AuditLogServlet</code> ΓÇö audit trail data</li>
+</ul>
+
+<p><strong>1 Filter:</strong> <code>AuditFilter</code> ΓÇö intercepts all requests and logs them.</p>
+
+<h2>Experiment 3 ΓÇö Functional Interface + Lambda Expressions</h2>
+
+<h3>Where in Project: <code>DelayDetectionEngine.java</code> and <code>StreamsAnalytics.java</code></h3>
+
+<p>Although the project doesn't have a standalone <code>Operation</code> interface, the <strong>functional programming concept is extensively used</strong> through Java's built-in functional interfaces:</p>
+
+<h4>Lambda expressions used throughout the analytics layer:</h4>
+
+<pre><code>// In DelayDetectionEngine.java ΓÇö Filter (Predicate&lt;T&gt; functional interface)
+actions.stream()
+    .filter(Action::isDelayed)                    // Predicate&lt;Action&gt; lambda
+    .sorted(Comparator.comparingLong(Action::getDelayHours).reversed())  // Comparator lambda
+    .limit(n)
+    .collect(Collectors.toList());
+
+// Grouping with lambda ΓÇö Function&lt;T,R&gt; functional interface
+actions.stream()
+    .collect(Collectors.groupingBy(
+        Action::getCommitteeName,                 // Function&lt;Action, String&gt; (method reference = lambda)
+        Collectors.averagingDouble(Action::getDelayPercentage)  // ToDoubleFunction&lt;Action&gt;
+    ));
+
+// forEach with lambda ΓÇö Consumer&lt;T&gt; functional interface
+avgDelays.forEach((member, avgDelay) -&gt; {
+    double score = Math.max(0, Math.min(100, 100.0 - avgDelay));    // compute: subtraction
+    scores.put(member, Math.round(score * 10.0) / 10.0);           // compute: multiplication, division
+});</code></pre>
+
+<h4>Mapping to Experiment 3 requirements:</h4>
+
+<table>
+  <thead><tr><th>Requirement</th><th>Project Implementation</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Addition</strong></td><td><code>getDelayHours()</code>: <code>closeRef.getTime() - expectedClose.getTime()</code> (time difference addition/subtraction)</td></tr>
+    <tr><td><strong>Subtraction</strong></td><td>Accountability score: <code>100.0 - avgDelay</code></td></tr>
+    <tr><td><strong>Multiplication</strong></td><td><code>delayMinutes * 100.0</code> for percentage calculation</td></tr>
+    <tr><td><strong>Division</strong></td><td><code>diff / 3600000</code> (milliseconds to hours), <code>(onTime * 100.0) / total</code> for health score</td></tr>
+    <tr><td><strong>Lambda usage</strong></td><td><code>Predicate</code>, <code>Function</code>, <code>Consumer</code>, <code>Comparator</code>, <code>ToDoubleFunction</code> ΓÇö all used as lambdas</td></tr>
+  </tbody>
+</table>
+
+<p>The <strong><code>Action.java</code> model class</strong> has compute methods:</p>
+<ul>
+  <li><code>getDelayHours()</code> ΓÇö subtraction of <code>LocalDateTime</code> using <code>Duration.between()</code></li>
+  <li><code>getDelayPercentage()</code> ΓÇö division: <code>(delayMinutes * 100.0) / totalMinutes</code></li>
+  <li><code>isDelayed()</code> ΓÇö comparison: <code>getDelayHours() > 0</code></li>
+</ul>
+
+<h2>Experiment 4 ΓÇö JDBC CRUD (INSERT, SELECT, UPDATE, DELETE)</h2>
+
+<h3>Where in Project: <code>ActionDAO.java</code>, <code>UserDAO.java</code>, <code>AuditLogDAO.java</code>, <code>CommitteeDAO.java</code>, <code>DBUtil.java</code></h3>
+
+<h4>Database Connection ΓÇö DBUtil.java:</h4>
+
+<pre><code>private static final String URL = "jdbc:mysql://localhost:3306/micro_audit?useSSL=false&amp;serverTimezone=UTC";
+
+static {
+    Class.forName("com.mysql.cj.jdbc.Driver");  // Load JDBC driver
+}
+
+public static Connection getConnection() throws SQLException {
+    return DriverManager.getConnection(URL, USER, PASS);
+}</code></pre>
+
+<h4>CRUD Operations in <code>ActionDAO.java</code>:</h4>
+
+<table>
+  <thead><tr><th>Operation</th><th>Method</th><th>SQL</th></tr></thead>
+  <tbody>
+    <tr><td><strong>INSERT</strong></td><td><code>createActionJDBC()</code></td><td><code>INSERT INTO actions (action_code, title, type, ...) VALUES (?, ?, ?, ...)</code></td></tr>
+    <tr><td><strong>SELECT</strong></td><td><code>findAllJDBC()</code></td><td><code>SELECT a.*, c.name, u.name FROM actions a JOIN committees c ... JOIN users u ...</code></td></tr>
+    <tr><td><strong>SELECT filtered</strong></td><td><code>findByUserJDBC(int userId)</code></td><td><code>... WHERE a.created_by = ?</code></td></tr>
+    <tr><td><strong>UPDATE</strong></td><td><code>updateStatusJDBC()</code></td><td><code>UPDATE actions SET status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?</code></td></tr>
+    <tr><td><strong>COUNT</strong></td><td><code>countByStatusJDBC()</code></td><td><code>SELECT COUNT(*) FROM actions WHERE status=?</code></td></tr>
+  </tbody>
+</table>
+
+<h4>CRUD in <code>UserDAO.java</code>:</h4>
+
+<ul>
+  <li><strong>SELECT (authenticate):</strong> <code>SELECT u.*, c.name FROM users u LEFT JOIN committees c ... WHERE u.staff_id = ? AND u.password = ?</code></li>
+  <li><strong>SELECT (find all):</strong> <code>SELECT u.*, c.name FROM users u LEFT JOIN committees c ... ORDER BY u.id</code></li>
+  <li><strong>UPDATE:</strong> <code>UPDATE users SET name=?, email=?, phone=?, department=? WHERE staff_id=?</code></li>
+</ul>
+
+<h4>Database Schema ΓÇö sql/schema.sql:</h4>
+
+<ul>
+  <li>4 tables: <code>committees</code>, <code>users</code>, <code>actions</code>, <code>audit_logs</code></li>
+  <li>Foreign keys between tables (referential integrity)</li>
+  <li>ENUM types for <code>role</code>, <code>priority</code>, <code>status</code></li>
+  <li>Seed data with 6 committees, 6 users, 5 actions, 9 audit logs</li>
+</ul>
+
+<pre><code>CREATE TABLE users (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id     VARCHAR(50)    NOT NULL UNIQUE,
+    name         VARCHAR(100)   NOT NULL,
+    email        VARCHAR(100),
+    phone        VARCHAR(20),
+    password     VARCHAR(255)   NOT NULL,
+    role         ENUM('Member','Head','Auditor') NOT NULL DEFAULT 'Member',
+    department   VARCHAR(100),
+    committee_id INT,
+    created_at   TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (committee_id) REFERENCES committees(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE actions (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    action_code     VARCHAR(30)    NOT NULL UNIQUE,
+    title           VARCHAR(200)   NOT NULL,
+    type            VARCHAR(50),
+    description     TEXT,
+    priority        ENUM('low','medium','high') DEFAULT 'low',
+    status          ENUM('Created','Review','Approved','Rejected','Closed') DEFAULT 'Created',
+    committee_id    INT            NOT NULL,
+    created_by      INT            NOT NULL,
+    approver_id     INT,
+    estimated_cost  DECIMAL(12,2),
+    expected_close  DATETIME       NOT NULL,
+    actual_close    DATETIME,
+    created_at      TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (committee_id) REFERENCES committees(id),
+    FOREIGN KEY (created_by)   REFERENCES users(id),
+    FOREIGN KEY (approver_id)  REFERENCES users(id)
+) ENGINE=InnoDB;</code></pre>
+
+<h2>Experiment 5 ΓÇö PreparedStatement for Secure Parameterized Queries</h2>
+
+<h3>Where in Project: Every DAO class uses <code>PreparedStatement</code></h3>
+
+<p>The project <strong>exclusively</strong> uses <code>PreparedStatement</code> (never raw <code>Statement</code>) to prevent SQL injection:</p>
+
+<pre><code>// From UserDAO.authenticateJDBC() ΓÇö parameterized login
+PreparedStatement ps = conn.prepareStatement(
+    "SELECT u.*, c.name AS committee_name FROM users u " +
+    "LEFT JOIN committees c ON u.committee_id = c.id " +
+    "WHERE u.staff_id = ? AND u.password = ?");
+ps.setString(1, staffId);    // Parameterized ΓÇö prevents SQL injection
+ps.setString(2, password);   // Parameterized ΓÇö prevents SQL injection</code></pre>
+
+<pre><code>// From AuditLogDAO.insertLogJDBC() ΓÇö nullable parameters
+if (actionId != null) ps.setInt(1, actionId);
+else ps.setNull(1, Types.INTEGER);  // Proper null handling</code></pre>
+
+<p><strong>Try-with-resources</strong> is used everywhere: <code>try (Connection conn = DBUtil.getConnection(); PreparedStatement ps = ...)</code> ΓÇö ensures automatic resource closure.</p>
+
+<p><strong>Employee table equivalent:</strong> The <code>users</code> table maps to the Employee structure:</p>
+<ul>
+  <li><code>id</code> (INT PRIMARY KEY) = <code>empId</code></li>
+  <li><code>name</code> (VARCHAR) = <code>empName</code></li>
+  <li><code>estimated_cost</code> in actions = <code>salary</code> (DOUBLE)</li>
+</ul>
+
+<h2>Experiment 6 ΓÇö Greeting Servlet (User Enters Name ΓåÆ Servlet Greets)</h2>
+
+<h3>Where in Project: <code>LoginServlet.java</code></h3>
+
+<p>The <code>LoginServlet</code> receives the user's name/credentials from the web form and responds with a personalized message:</p>
+
+<pre><code>// User enters staffId in the web form ΓåÆ LoginServlet processes it
+@Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    String staffId = req.getParameter("userId");      // Receive from form
+    String password = req.getParameter("password");
+    
+    User user = userDAO.authenticateJDBC(staffId, password);
+    
+    // Build dynamic greeting response (JSON)
+    json.addProperty("message", "Login successful");
+    json.addProperty("name", user.getName());         // Dynamic greeting with name
+    json.addProperty("role", user.getRole().name());
+}</code></pre>
+
+<p>The frontend (<code>login.js</code>) sends the form data via <code>fetch()</code>:</p>
+
+<pre><code>const resp = await fetch('../LoginServlet', {
+    method: 'POST',
+    body: new URLSearchParams({ userId: staffId, password: password, role: role })
+});</code></pre>
+
+<h2>Experiment 7 ΓÇö Add/Subtract Servlet (Two Numbers, Two Buttons)</h2>
+
+<h3>Where in Project: <code>ActionServlet.java</code> (doPut for status changes) + <code>DashboardServlet.java</code> (KPI computation)</h3>
+
+<p>The <code>DashboardServlet</code> computes numeric results from data:</p>
+
+<pre><code>// DashboardServlet.doGet() ΓÇö computes KPIs (addition, counting)
+int total = allActions.size();
+long delayed = allActions.stream().filter(ActionDAO.ActionRow::isDelayed).count();
+long approved = allActions.stream().filter(a -> "Approved".equals(a.status)).count();
+double avgDelay = allActions.stream().mapToLong(ActionDAO.ActionRow::getDelayHours).average().orElse(0);</code></pre>
+
+<p>The <code>ActionServlet.doPut()</code> takes <code>actionId</code> and <code>status</code> parameters and computes the update ΓÇö different button actions ("Approve" / "Reject") trigger different results, directly matching the Add/Subtract button concept.</p>
+
+<h2>Experiment 8 ΓÇö Employee Details in HTML Table from Servlet</h2>
+
+<h3>Where in Project: <code>AuditLogServlet.java</code> + <code>DashboardServlet.java</code></h3>
+
+<p>Servlets return data that's rendered as HTML tables:</p>
+
+<pre><code>// AuditLogServlet ΓÇö returns employee/user details as JSON ΓåÆ rendered in HTML table
+@Override
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    List&lt;AuditLogDAO.AuditLogRow&gt; logs = auditLogDAO.findAllJDBC();
+    out.print(gson.toJson(logs));  // Sent as JSON ΓåÆ frontend renders table
+}</code></pre>
+
+<p>The <code>audit-logs.html</code> page fetches this data and renders it in an HTML table with columns: Activity, User, Role, Action Code, Details, IP Address, Session, Timestamp.</p>
+
+<h2>Experiment 9 ΓÇö Cookies Implementation</h2>
+
+<h3>Where in Project: <code>LoginServlet.java</code> (Session Management = Server-side Cookies)</h3>
+
+<pre><code>// LoginServlet ΓÇö creates HTTP session (JSESSIONID cookie sent automatically)
+HttpSession session = req.getSession(true);
+session.setAttribute("userId", user.getId());
+session.setAttribute("staffId", user.getStaffId());
+session.setAttribute("userName", user.getName());
+session.setAttribute("role", user.getRole().name());
+session.setMaxInactiveInterval(30 * 60);  // 30-minute session timeout</code></pre>
+
+<ul>
+  <li><code>req.getSession(true)</code> creates a session and the server automatically sends a <code>JSESSIONID</code> cookie to the browser.</li>
+  <li>All subsequent requests include this cookie, allowing the server to identify the user.</li>
+  <li>Session timeout is configured: <code>&lt;session-config&gt;&lt;session-timeout&gt;30&lt;/session-timeout&gt;&lt;/session-config&gt;</code> in <code>web.xml</code>.</li>
+  <li>On the frontend, <code>sessionStorage</code> is used as client-side session storage (the browser equivalent of cookies for single-tab persistence).</li>
+</ul>
+
+<h2>Experiment 10 ΓÇö JSP Greeting (User Enters Name ΓåÆ JSP Greets)</h2>
+
+<h3>Where in Project: JSP files in <code>WEB-INF/jsp/</code></h3>
+
+<p>Three JSP pages demonstrate server-side rendering with JSTL:</p>
+
+<h4>1. admin-dashboard.jsp:</h4>
+<ul>
+  <li>Greeting with user name: <code>${sessionScope.userName}</code> (EL expression reads from session)</li>
+  <li>Uses JSTL <code>&lt;c:forEach&gt;</code> to iterate over committee delay scores</li>
+  <li>Uses <code>&lt;fmt:formatNumber&gt;</code> for number formatting</li>
+  <li>Uses <code>&lt;c:choose&gt;/&lt;c:when&gt;</code> for conditional rendering</li>
+</ul>
+
+<h4>2. analytics.jsp:</h4>
+<ul>
+  <li>Displays all Streams API results using JSTL tags</li>
+  <li>Shows Java Streams code reference block with syntax highlighting</li>
+</ul>
+
+<h4>3. audit-logs.jsp:</h4>
+<ul>
+  <li>Full audit log table rendered server-side with <code>&lt;c:forEach items="${logs}"&gt;</code></li>
+  <li>Activity type badges with conditional CSS classes</li>
+</ul>
+
+<h4>JSP EL expressions used:</h4>
+
+<pre><code>${sessionScope.userName}           &lt;!-- Greets user by name from session --&gt;
+${totalActions}                     &lt;!-- Model attribute from controller --&gt;
+${avgDelayByCommittee}             &lt;!-- Map iterated with c:forEach --&gt;
+${entry.key} / ${entry.value}      &lt;!-- Map entry access in loops --&gt;
+${action.delayHours}               &lt;!-- Bean property access --&gt;</code></pre>
+
+<h2>Servlet Filter (AuditFilter.java)</h2>
+
+<p>The <code>AuditFilter</code> is a powerful concept that:</p>
+<ol>
+  <li>Intercepts <strong>every HTTP request</strong> (<code>&lt;url-pattern&gt;/*&lt;/url-pattern&gt;</code>)</li>
+  <li>Extracts user info from session (userId, role, sessionId)</li>
+  <li>Skips static resources (.css, .js, .png)</li>
+  <li>Chains the request forward: <code>chain.doFilter(request, response)</code></li>
+  <li>Measures processing time: <code>System.currentTimeMillis()</code> before and after</li>
+  <li>Logs to the audit trail database via <code>AuditLogDAO</code></li>
+</ol>
+
+<p>This is registered in <code>web.xml</code>:</p>
+
+<pre><code>&lt;filter&gt;
+    &lt;filter-name&gt;AuditFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;com.microaudit.util.AuditFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+    &lt;filter-name&gt;AuditFilter&lt;/filter-name&gt;
+    &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</code></pre>
+
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+<!--                       PERSON 3                                 -->
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+
+<div class="page-break"></div>
+
+<div class="person-header person3" id="person3">PERSON 3 ΓÇö Backend Part B (Hibernate ORM, Spring Core/MVC, Java Streams)</div>
+
+<div class="covers-box">
+  <strong>Covers Experiments:</strong> 11 (Hibernate ORM), 12 (Spring Core DI), 13 (Spring MVC), and Content Beyond Syllabus #2 (Java Streams API)
+</div>
+
+<h2>Experiment 11 ΓÇö Hibernate ORM</h2>
+
+<h3>1. Entity Classes with Hibernate Annotations</h3>
+
+<p><strong>4 Entity classes</strong> in <code>com.microaudit.model</code>:</p>
+
+<h4>a) User.java:</h4>
+
+<pre><code>@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "staff_id", nullable = false, unique = true)
+    private String staffId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "committee_id")
+    private Committee committee;
+}</code></pre>
+
+<h4>b) Action.java:</h4>
+
+<pre><code>@Entity
+@Table(name = "actions")
+public class Action {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "committee_id", nullable = false)
+    private Committee committee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+}</code></pre>
+
+<h4>c) AuditLog.java ΓÇö <code>@Entity</code>, <code>@ManyToOne</code> to Action and User.</h4>
+
+<h4>d) Committee.java ΓÇö <code>@Entity</code>, <code>@Table</code>, <code>@Id</code>, <code>@GeneratedValue</code>.</h4>
+
+<p><strong>Annotations covered:</strong> <code>@Entity</code>, <code>@Table</code>, <code>@Id</code>, <code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code>, <code>@Column</code>, <code>@Enumerated(EnumType.STRING)</code>, <code>@ManyToOne(fetch = FetchType.LAZY)</code>, <code>@JoinColumn</code>.</p>
+
+<h3>2. Hibernate Configuration ΓÇö hibernate.cfg.xml</h3>
+
+<pre><code>&lt;hibernate-configuration&gt;
+    &lt;session-factory&gt;
+        &lt;!-- Database connection details --&gt;
+        &lt;property name="hibernate.connection.driver_class"&gt;com.mysql.cj.jdbc.Driver&lt;/property&gt;
+        &lt;property name="hibernate.connection.url"&gt;jdbc:mysql://localhost:3306/micro_audit&lt;/property&gt;
+        &lt;property name="hibernate.connection.username"&gt;root&lt;/property&gt;
+        &lt;property name="hibernate.connection.password"&gt;G@ur@v@10&lt;/property&gt;
+
+        &lt;!-- Dialect --&gt;
+        &lt;property name="hibernate.dialect"&gt;org.hibernate.dialect.MySQLDialect&lt;/property&gt;
+
+        &lt;!-- Mapping class entries --&gt;
+        &lt;mapping class="com.microaudit.model.User"/&gt;
+        &lt;mapping class="com.microaudit.model.Committee"/&gt;
+        &lt;mapping class="com.microaudit.model.Action"/&gt;
+        &lt;mapping class="com.microaudit.model.AuditLog"/&gt;
+    &lt;/session-factory&gt;
+&lt;/hibernate-configuration&gt;</code></pre>
+
+<h4>HibernateUtil.java ΓÇö Singleton SessionFactory provider:</h4>
+
+<pre><code>sessionFactory = new Configuration()
+    .configure("hibernate.cfg.xml")
+    .buildSessionFactory();</code></pre>
+
+<h3>3. Hibernate CRUD Operations</h3>
+
+<p>Every DAO has Hibernate methods alongside JDBC methods:</p>
+
+<h4>INSERT (in <code>ActionDAO.saveHibernate()</code>):</h4>
+
+<pre><code>public void saveHibernate(Action action) {
+    Transaction tx = null;
+    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        tx = session.beginTransaction();
+        session.persist(action);       // INSERT
+        tx.commit();
+    } catch (Exception e) {
+        if (tx != null) tx.rollback();  // Rollback on failure
+    }
+}</code></pre>
+
+<h4>RETRIEVE using HQL (in <code>ActionDAO.findAllHibernate()</code>):</h4>
+
+<pre><code>return session.createQuery(
+    "FROM Action a JOIN FETCH a.committee JOIN FETCH a.createdBy ORDER BY a.createdAt DESC",
+    Action.class).list();</code></pre>
+
+<h4>UPDATE (in <code>ActionDAO.updateStatusHibernate()</code>):</h4>
+
+<pre><code>Action action = session.get(Action.class, actionId);
+action.setStatus(newStatus);
+session.merge(action);  // UPDATE</code></pre>
+
+<p><strong>DELETE</strong> ΓÇö supported through session.delete() pattern (same transaction structure).</p>
+
+<h2>Experiment 12 ΓÇö Spring Core (Dependency Injection, Autowiring, Bean Scopes)</h2>
+
+<h3>1. Two Classes with Dependency Injection</h3>
+
+<p>The project has <code>AdminController</code> (like "Teacher") and <code>ActionDAO</code> (like "Course"):</p>
+
+<h4>WebConfig.java defines beans (like creating "Course" and injecting into "Teacher"):</h4>
+
+<pre><code>@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "com.microaudit.spring")
+public class WebConfig implements WebMvcConfigurer {
+
+    // Bean definitions ΓÇö Dependency Injection
+    @Bean
+    public UserDAO userDAO() { return new UserDAO(); }
+
+    @Bean
+    public ActionDAO actionDAO() { return new ActionDAO(); }
+
+    @Bean
+    public AuditLogDAO auditLogDAO() { return new AuditLogDAO(); }
+
+    @Bean
+    public CommitteeDAO committeeDAO() { return new CommitteeDAO(); }
+
+    @Bean
+    public StreamsAnalytics streamsAnalytics() { return new StreamsAnalytics(); }
+
+    @Bean
+    public DelayDetectionEngine delayDetectionEngine() { return new DelayDetectionEngine(); }
+}</code></pre>
+
+<h3>2. Autowiring</h3>
+
+<h4>AdminController.java uses <code>@Autowired</code> to automatically inject beans:</h4>
+
+<pre><code>@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+    @Autowired
+    private ActionDAO actionDAO;            // Auto-injected
+
+    @Autowired
+    private AuditLogDAO auditLogDAO;        // Auto-injected
+
+    @Autowired
+    private StreamsAnalytics analytics;      // Auto-injected
+
+    @Autowired
+    private DelayDetectionEngine delayEngine; // Auto-injected
+}</code></pre>
+
+<p>Spring's <strong>IoC Container</strong> creates the DAO/Analytics beans (defined in <code>WebConfig</code>) and injects them into <code>AdminController</code> via <code>@Autowired</code>.</p>
+
+<h3>3. Bean Scopes</h3>
+
+<ul>
+  <li>By default, all <code>@Bean</code> methods in <code>WebConfig</code> create <strong>singleton</strong> beans (Spring default scope).</li>
+  <li><code>UserDAO</code>, <code>ActionDAO</code>, etc. are all <strong>singletons</strong> ΓÇö one instance shared across the application.</li>
+  <li>Prototype scope can be demonstrated by adding <code>@Scope("prototype")</code> to any bean definition ΓÇö each request would create a new instance.</li>
+</ul>
+
+<h2>Experiment 13 ΓÇö Spring MVC Application</h2>
+
+<h3>1. Form to Add a New Product (Map: Action = Product)</h3>
+
+<p>The <code>action-form.html</code> displays a form with fields:</p>
+<ul>
+  <li><code>id</code> (auto-generated), <code>title</code> (name), <code>estimatedCost</code> (price)</li>
+  <li>Plus: type, committee, due date, description, priority, approver</li>
+</ul>
+
+<h3>2. Saves to Database Using Hibernate + Spring</h3>
+
+<p>The <code>AdminController</code> uses <code>actionDAO.findAllHibernate()</code> to read data. The <code>ActionServlet</code> uses <code>actionDAO.createActionJDBC()</code> to save ΓÇö demonstrating both persistence approaches.</p>
+
+<h3>3. Handler Mapping (Controller Method Routing)</h3>
+
+<h4>WebAppInitializer.java registers Spring's <code>DispatcherServlet</code>:</h4>
+
+<pre><code>public class WebAppInitializer implements WebApplicationInitializer {
+    @Override
+    public void onStartup(ServletContext servletContext) {
+        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+        ctx.register(WebConfig.class);
+
+        DispatcherServlet dispatcher = new DispatcherServlet(ctx);
+        ServletRegistration.Dynamic registration = servletContext.addServlet("dispatcher", dispatcher);
+        registration.setLoadOnStartup(1);
+        registration.addMapping("/app/*");   // All /app/* requests go through Spring MVC
+    }
+}</code></pre>
+
+<h4>Handler mapping via <code>@GetMapping</code> annotations:</h4>
+
+<pre><code>@GetMapping("/dashboard")    ΓåÆ renders "admin-dashboard" JSP
+@GetMapping("/audit-logs")   ΓåÆ renders "audit-logs" JSP
+@GetMapping("/analytics")    ΓåÆ renders "analytics" JSP</code></pre>
+
+<h3>4. Spring AOP (Logging Before Save)</h3>
+
+<p>The <strong>AuditFilter</strong> acts as the cross-cutting concern (AOP equivalent):</p>
+<ul>
+  <li>Logs <strong>before</strong> and <strong>after</strong> every request</li>
+  <li>Measures processing time</li>
+  <li>Records user, IP, session, role</li>
+</ul>
+
+<p>The <code>ActionServlet</code> also logs after creation:</p>
+
+<pre><code>auditLogDAO.insertLogJDBC(newId, userId, "ACTION_CREATED",
+    "Created action " + actionCode + ": " + title, ...);</code></pre>
+
+<h3>5. Success Page After Submission</h3>
+
+<p>The JSP views serve as success pages:</p>
+<ul>
+  <li><code>admin-dashboard.jsp</code> ΓÇö shows all saved actions with delay analysis</li>
+  <li><code>analytics.jsp</code> ΓÇö shows Streams API results</li>
+</ul>
+
+<h4>View Resolver configuration in <code>WebConfig.java</code>:</h4>
+
+<pre><code>@Bean
+public ViewResolver viewResolver() {
+    InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+    resolver.setViewClass(JstlView.class);
+    resolver.setPrefix("/WEB-INF/jsp/");
+    resolver.setSuffix(".jsp");
+    return resolver;
+}</code></pre>
+
+<p>When controller returns <code>"admin-dashboard"</code>, Spring resolves to <code>/WEB-INF/jsp/admin-dashboard.jsp</code>.</p>
+
+<h2>Content Beyond Syllabus #2 ΓÇö Java Streams API</h2>
+
+<h3>Where in Project: <code>StreamsAnalytics.java</code> + <code>DelayDetectionEngine.java</code></h3>
+
+<p><strong>StreamsAnalytics.java</strong> is a dedicated class with 10 Streams operations:</p>
+
+<table>
+  <thead><tr><th>Method</th><th>Stream Operation</th><th>Collectors Used</th></tr></thead>
+  <tbody>
+    <tr><td><code>averageDelayByCommittee()</code></td><td><code>groupingBy</code></td><td><code>Collectors.groupingBy + Collectors.averagingLong</code></td></tr>
+    <tr><td><code>partitionByDelay()</code></td><td><code>partitioningBy</code></td><td><code>Collectors.partitioningBy(Action::isDelayed)</code></td></tr>
+    <tr><td><code>countActionsPerMember()</code></td><td><code>groupingBy</code></td><td><code>Collectors.groupingBy + Collectors.counting</code></td></tr>
+    <tr><td><code>findMaxDelayAction()</code></td><td><code>max</code></td><td><code>Stream.max(Comparator.comparingLong(...))</code></td></tr>
+    <tr><td><code>averageDelayByPriority()</code></td><td><code>groupingBy + filter</code></td><td><code>Collectors.groupingBy + Collectors.averagingLong</code></td></tr>
+    <tr><td><code>statusDistribution()</code></td><td><code>groupingBy</code></td><td><code>Collectors.groupingBy + Collectors.counting</code></td></tr>
+    <tr><td><code>totalDelayByCommittee()</code></td><td><code>groupingBy</code></td><td><code>Collectors.groupingBy + Collectors.summingLong</code></td></tr>
+    <tr><td><code>topDelayedActions()</code></td><td><code>filter + sorted + limit</code></td><td><code>Collectors.toList</code></td></tr>
+    <tr><td><code>groupByCommittee()</code></td><td><code>groupingBy</code></td><td><code>Collectors.groupingBy</code></td></tr>
+    <tr><td><code>generateSummaryReport()</code></td><td>combines all above</td><td>returns <code>Map&lt;String, Object&gt;</code></td></tr>
+  </tbody>
+</table>
+
+<p><strong>DelayDetectionEngine.java</strong> adds:</p>
+<ul>
+  <li><code>memberAccountabilityScores()</code> ΓÇö scores 0-100 using <code>averagingDouble</code> + sorted map</li>
+  <li><code>detectDelayPatterns()</code> ΓÇö identifies committees with &gt;60% delay rate, members with 2+ delays, high-priority delays, threshold violations</li>
+  <li><code>systemHealthScore()</code> ΓÇö overall system health with penalty for high-priority delays</li>
+  <li><code>generateDelayStats()</code> ΓÇö comprehensive statistics using <code>OptionalDouble</code>, <code>OptionalLong</code></li>
+</ul>
+
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+<!--                       SUMMARY TABLE                            -->
+<!-- ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ -->
+
+<div class="page-break"></div>
+
+<h2 id="summary">Summary: Experiment-to-Code Mapping</h2>
+
+<table>
+  <thead><tr><th>Exp#</th><th>CO</th><th>Concept</th><th>Project File(s)</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>CO1</td><td>HTML/CSS Profile Page</td><td>profile.html, profile.css, global.css</td></tr>
+    <tr><td>2</td><td>CO1</td><td>JS Classes + JSON</td><td>User.js, Action.js, ActionRequest.js, dashboard.js</td></tr>
+    <tr><td>3</td><td>CO2</td><td>Functional Interface + Lambda</td><td>DelayDetectionEngine.java, StreamsAnalytics.java</td></tr>
+    <tr><td>4</td><td>CO2</td><td>JDBC CRUD</td><td>ActionDAO.java, UserDAO.java, DBUtil.java, schema.sql</td></tr>
+    <tr><td>5</td><td>CO2</td><td>PreparedStatement</td><td>All DAO files (every query uses PreparedStatement)</td></tr>
+    <tr><td>6</td><td>CO3</td><td>Greeting Servlet</td><td>LoginServlet.java + index.html</td></tr>
+    <tr><td>7</td><td>CO3</td><td>Add/Subtract Servlet</td><td>DashboardServlet.java (KPI computation), ActionServlet.doPut()</td></tr>
+    <tr><td>8</td><td>CO3</td><td>Employee Details Table</td><td>AuditLogServlet.java + audit-logs.html</td></tr>
+    <tr><td>9</td><td>CO3</td><td>Cookies/Sessions</td><td>LoginServlet.java (HttpSession), web.xml (session-config)</td></tr>
+    <tr><td>10</td><td>CO3</td><td>JSP Greeting</td><td>admin-dashboard.jsp, analytics.jsp, audit-logs.jsp</td></tr>
+    <tr><td>11</td><td>CO4</td><td>Hibernate ORM</td><td>All Model classes, hibernate.cfg.xml, HibernateUtil.java, DAO Hibernate methods</td></tr>
+    <tr><td>12</td><td>CO4</td><td>Spring Core DI + Autowiring</td><td>WebConfig.java, AdminController.java</td></tr>
+    <tr><td>13</td><td>CO4</td><td>Spring MVC</td><td>WebAppInitializer.java, AdminController.java, JSP views, WebConfig.java</td></tr>
+    <tr><td>CBS1</td><td>ΓÇö</td><td>Performance Optimization</td><td>Font display=swap, session caching, dynamic DOM, CSS variables</td></tr>
+    <tr><td>CBS2</td><td>ΓÇö</td><td>Java Streams API</td><td>StreamsAnalytics.java (10 methods), DelayDetectionEngine.java</td></tr>
+  </tbody>
+</table>
+
+<h2>Maven Dependencies (pom.xml)</h2>
+
+<table>
+  <thead><tr><th>Dependency</th><th>Version</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>jakarta.servlet-api</td><td>5.0.0</td><td>Servlet API (Exp 6-9)</td></tr>
+    <tr><td>jakarta.servlet.jsp-api</td><td>3.0.0</td><td>JSP API (Exp 10)</td></tr>
+    <tr><td>jakarta.servlet.jsp.jstl-api</td><td>2.0.0</td><td>JSTL tags (Exp 10)</td></tr>
+    <tr><td>mysql-connector-java</td><td>8.0.33</td><td>JDBC Driver (Exp 4-5)</td></tr>
+    <tr><td>hibernate-core</td><td>6.2.6.Final</td><td>Hibernate ORM (Exp 11)</td></tr>
+    <tr><td>spring-core</td><td>6.0.11</td><td>Spring IoC/DI (Exp 12)</td></tr>
+    <tr><td>spring-webmvc</td><td>6.0.11</td><td>Spring MVC (Exp 13)</td></tr>
+    <tr><td>gson</td><td>2.10.1</td><td>JSON serialization</td></tr>
+    <tr><td>Java</td><td>17</td><td>Language version</td></tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  <p><strong>Micro-Audit System</strong> ΓÇö Process Accountability & Transparency Platform</p>
+  <p>Full Stack Development Project ΓÇö Detailed Explanation Document</p>
+</div>
+
+</body>
+</html>
